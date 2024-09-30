@@ -43,7 +43,7 @@ export default function LoggedInPage() {
       engine_type: type,
     });
     console.log(data)
-  }, []);
+  });
 
 
   const displayOnScreen = (elem, role, options = []) => {
