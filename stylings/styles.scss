@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 95vh;
     align-items: center;
+    justify-content: center;
     .cont_header{
         width: 55%;
         // border: 1px solid black;
@@ -16,6 +17,13 @@
         box-shadow:  0 6px 10px rgba(0, 0, 0, 0.527);;
 
     }
+
+    @media (max-width:636px) {
+        .cont_header{
+            width:98%
+        }
+      }
+        
   }
   
   .innerCont {
@@ -23,7 +31,7 @@
     overflow-y: auto;
     padding: 20px;
     width: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.185);
+    // border: 1px solid rgba(0, 0, 0, 0.185);
     height: 27em;
     position: absolute;
         top: 10%;
@@ -36,6 +44,11 @@
             z-index: 2;
             transform: translate(-50%, -50%); /* Centering */
         }
+  }
+  @media (max-width:636px) {
+    .innerCont{
+        width:98%
+    }
   }
   
   .sender {
@@ -97,7 +110,12 @@
     }
   }
   
-
+  @media (max-width:636px) {
+    .inputSection{
+        width:98%
+    }
+  }
+  
 
   //headers
   .plain-header {
@@ -128,6 +146,16 @@
         }
       }
   }
+
+  @media (max-width:636px) {
+    .plain-header{
+        h2 {
+            font-size: 1rem;
+          }
+    }
+  }
+
+    
   
   .logged-in-header {
     background-color: #007bff;
@@ -156,6 +184,15 @@
       }
     }
   }
+
+  @media (max-width:636px) {
+    .logged-in-header{
+        h2 {
+            font-size: 1rem;
+          }
+    }
+  }
+
   
   .subscription-success-header {
     background-color: #28a745;
@@ -181,7 +218,15 @@
       }
     }
   }
-  
+
+  @media (max-width:636px) {
+    .subscription-success-header{
+        h2 {
+            font-size: 1rem;
+          }
+    }
+  }
+
 
   .signup-container {
     padding: 20px;
@@ -226,8 +271,6 @@
       }
     }
   }
-
-  
 
   .verification-container {
     padding: 20px;
@@ -278,7 +321,7 @@ form{
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 300px;
+    width: 50%;
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -317,7 +360,7 @@ form{
       }
     }
   }
-  
+ 
 
   .wrapper{
     width: 100%;
@@ -433,3 +476,4 @@ form{
         }
     }
 }
+

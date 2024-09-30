@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 95vh;
   align-items: center;
+  justify-content: center;
 }
 .container .cont_header {
   width: 55%;
@@ -15,13 +16,17 @@
   justify-content: center;
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.527);
 }
+@media (max-width: 636px) {
+  .container .cont_header {
+    width: 98%;
+  }
+}
 
 .innerCont {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
   width: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.185);
   height: 27em;
   position: absolute;
   top: 10%;
@@ -34,6 +39,11 @@
   transform: translate(-50%, -50%); /* Centering */
 }
 
+@media (max-width: 636px) {
+  .innerCont {
+    width: 98%;
+  }
+}
 .sender {
   width: 100%;
   display: flex;
@@ -86,6 +96,11 @@
   background: #ccc;
 }
 
+@media (max-width: 636px) {
+  .inputSection {
+    width: 98%;
+  }
+}
 .plain-header {
   background-color: #f8f9fa;
   padding: 20px;
@@ -112,6 +127,11 @@
   background-color: #e0a800;
 }
 
+@media (max-width: 636px) {
+  .plain-header h2 {
+    font-size: 1rem;
+  }
+}
 .logged-in-header {
   background-color: #007bff;
   color: white;
@@ -137,6 +157,11 @@
   background-color: #e0a800;
 }
 
+@media (max-width: 636px) {
+  .logged-in-header h2 {
+    font-size: 1rem;
+  }
+}
 .subscription-success-header {
   background-color: #28a745;
   color: white;
@@ -158,6 +183,11 @@
   margin-right: 5px;
 }
 
+@media (max-width: 636px) {
+  .subscription-success-header h2 {
+    font-size: 1rem;
+  }
+}
 .signup-container {
   padding: 20px;
   border: 1px solid #ccc;
@@ -243,7 +273,7 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 300px;
+  width: 50%;
   margin: auto;
   display: flex;
   flex-direction: column;

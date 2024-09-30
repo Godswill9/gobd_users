@@ -43,7 +43,7 @@ export default function LoggedInPage() {
       engine_type: type,
     });
     console.log(data)
-  });
+  },[]);
 
 
   const displayOnScreen = (elem, role, options = []) => {
@@ -131,11 +131,11 @@ export default function LoggedInPage() {
 
     const timeoutId = setTimeout(() => {
       if (!data) {
-        // console.log("error");
+        console.log("error");
         // navigate('/a/b/c/d'); // Redirect on error
         navigate(`/${storedValues.car_make}/${storedValues.car_model}/${storedValues.car_year}/${storedValues.engine_type}`);
       } else {
-        // console.log("good");
+        console.log("good");
         navigate(`/${data.username}`); // Redirect on success
       }
     }, 100);
