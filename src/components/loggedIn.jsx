@@ -42,6 +42,7 @@ export default function LoggedInPage() {
       car_year: year,
       engine_type: type,
     });
+    console.log(data)
   }, []);
 
 
