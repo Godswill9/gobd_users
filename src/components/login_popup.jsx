@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../../stylings/styles.css';
+import Cookies from 'js-cookie';
 
 const Login = ({loginDisplay, setloginDisplayHandler, setSignupDisplay, setverificationDisplayHandler, setwrapperDisplayHandler}) => {
   const [data, setData] = useState({
@@ -27,11 +28,17 @@ const Login = ({loginDisplay, setloginDisplayHandler, setSignupDisplay, setverif
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log(res)
-        if(res.status == "success"){
-          window.location.href = `${import.meta.env.VITE_CLIENT_URL}/${res.username}`
+        console.log(res);
+        if (res.status === "success") {
+            // Save the response data to cookies
+            Cookies.set('jwt_user', res.accessToken, { expires: 7 }); // Set cookie to expire in 7 days
+            // Redirect to the user's page
+            setTimeout(()=>{
+               window.location.href = `${import.meta.env.VITE_CLIENT_URL}/${res.username}`;
+            })
+           
         }
-      })
+    })
       .catch((e)=>{
         console.log(e)
       })
