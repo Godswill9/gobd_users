@@ -41,6 +41,7 @@ const Login = ({loginDisplay, setloginDisplayHandler, setSignupDisplay, setverif
     })
       .catch((e)=>{
         console.log(e)
+        alert(e)
       })
   };
 

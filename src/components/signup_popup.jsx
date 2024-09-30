@@ -76,6 +76,7 @@ const Signup = ({SignupDisplay,  setloginDisplayHandler,setverificationDisplayHa
       })
       .catch((e)=>{
         console.log(e)
+        alert(e)
       })
   };
 
