@@ -3,7 +3,7 @@ import '../../stylings/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 
-const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayHandler, setSignupDisplay, setwrapperDisplayHandler, car_make, car_model, car_year, engine_type }) => {
+const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayHandler, setSignupDisplay, setwrapperDisplayHandler, car_make, car_model, car_year, engine_type }) => {
   const [data, setData] = useState({
     username: "",
     email: "",
@@ -32,18 +32,16 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
     return randomString;
   }
 
-  const handleLogin = () => {
-    navigate('/login');
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    localStorage.setItem("email", data.email)
+    localStorage.setItem("password", data.password)
 
     const additionalData = {
-      car_make,
-      car_model,
-      car_year,
-      engine_type,
+      car_make:localStorage.getItem("car_make"),
+      car_model:localStorage.getItem("car_model"),
+      car_year:localStorage.getItem("car_year"),
+      engine_type:localStorage.getItem("engine_type"),
     };
 
     const combinedData = {
@@ -75,9 +73,14 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
           pauseOnHover: true,
           draggable: true,
           theme: "light",
-        });
-        navigate('/user_verification');
-      } else {
+        })
+        handleVerifyUser()
+           // Proceed to payment
+        payHandler(data.email); 
+      }else if(res.message === "user already exists"){
+        payHandler(data.email); 
+      } 
+      else {
         toast.error(res.message || 'Signup failed. Please try again.', {
           position: "top-right",
           autoClose: 2000,
@@ -102,14 +105,85 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
     }
   };
 
+  const handleVerifyUser = async () => {
+    // console.log(code);
+    var code = data.code
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/verifyEmail`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+        credentials: "include",
+      });
+
+      const res = await response.json();
+      console.log(res);
+
+      if (res.message === "success") {
+        toast.success('Success... redirecting to login!', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+        
+      } else {
+        throw new Error('Verification failed');
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error('Error in verifying user', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+    }
+  };
+
+  const payHandler = () => {
+    fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: data.email}),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        console.log(res);
+        if (res.data && res.data.authorization_url) {
+          // Redirect using navigate
+          window.location.href = res.data.authorization_url; 
+          localStorage.setItem("ref", res.data.reference);
+        } else {
+          console.error("Authorization URL not found in the response.");
+          alert('Error: Authorization URL not found');
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
   return (
     <div className="signup-container" style={{ display: SignupDisplay }}>
-      <h2>Sign Up</h2>
+      <h2>Checkout page</h2>
       <ToastContainer />
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="User name"
+          placeholder="Create a Username"
           required
           name='username'
           value={data.username}
@@ -117,7 +191,7 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
         />
         <input
           type="email"
-          placeholder="Email"
+          placeholder="Enter a valid email address"
           required
           name='email'
           value={data.email}
@@ -125,7 +199,7 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Create a password..."
           required
           name='password'
           value={data.password}
@@ -139,13 +213,10 @@ const Signup = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayH
           value={data.phoneNumber}
           onChange={handleChange}
         />
-        <button type="submit" className="btn">Sign Up</button>
+        <button type="submit" className="btn">Proceed to paystack</button>
       </form>
-      <p>
-        Already have an account? <button onClick={handleLogin}>Login</button>
-      </p>
     </div>
   );
 };
 
-export default Signup;
+export default Checkout;

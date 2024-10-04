@@ -22,7 +22,7 @@ export const AppProvider = ({ children }) => {
         credentials: "include" 
       });
       const data = await response.json();
-      if (data === null || (data && data.message === "login again")) {
+      if (data === null || (data && data.message === "Please log in again.")) {
         setLoginStatus(false);
       } else {
         // console.log(data)   

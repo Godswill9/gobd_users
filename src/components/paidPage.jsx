@@ -1,81 +1,98 @@
 import React, { useState, useEffect, useRef } from 'react';
 import "../../stylings/styles.css";
-import HeaderUnpaid from './header_unpaid.jsx';
 import SubscriptionSuccessHeader from './header_subscribe.jsx';
-import LoggedInHeader from './header_register.jsx';
-import Login from './login_popup.jsx';
-import VerificationCode from './verify_popup.jsx';
-import Signup from './signup_popup.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from './appContext.jsx';
+import AnimatedMessage from './AnimatedMessage'; // Import the AnimatedMessage component
 
 export default function PaidPage() {
   const { data, loginStatus } = useAppContext();
   const [inputMessage, setInputMessage] = useState('');
   const { user } = useParams();
   const [messages, setMessages] = useState([]);
-  const [loginDisplayHandler, setLoginDisplayHandler] = useState("none");
-  const [verificationDisplayHandler, setVerificationDisplayHandler] = useState("none");
-  const [signupDisplayHandler, setSignupDisplayHandler] = useState("none");
-  const [wrapperDisplayHandler, setWrapperDisplayHandler] = useState("none");
   const [requestCount, setRequestCount] = useState(0);
+  const [loading, setLoading] = useState(false);
   const innerContRef = useRef(null);
   const navigate = useNavigate();
-  
-  const [storedValues, setStoredValues] = useState({
-    car_make: '',
-    car_model: '',
-    car_year: '',
-    engine_type: '',
-  });
+  const firstMessageCalled = useRef(false); // To track if the first message has been called
 
-  useEffect(() => {
-    // Retrieve from localStorage
-    const make = localStorage.getItem('car_make');
-    const model = localStorage.getItem('car_model');
-    const year = localStorage.getItem('car_year');
-    const type = localStorage.getItem('engine_type');
+  // Retrieve from localStorage
+  const make = localStorage.getItem('car_make');
+  const model = localStorage.getItem('car_model');
+  const year = localStorage.getItem('car_year');
+  const type = localStorage.getItem('engine_type');
+  const fault_code = localStorage.getItem('fault_code');
 
-    // Update state with retrieved values
-    setStoredValues({
-      car_make: make,
-      car_model: model,
-      car_year: year,
-      engine_type: type,
-    });
-  }, []);
-
-
-  const displayOnScreen = (elem, role, options = []) => {
-    setMessages((prevMessages) => [...prevMessages, { elem, role, options }]);
+  const displayOnScreen = (elem, role) => {
+    setMessages(prevMessages => [...prevMessages, { elem, role }]);
+    console.log(messages);
   };
 
   const replyMessage = async (message) => {
-    if (requestCount === 4) {
-      displayOnScreen(
-        `You've reached the limit of your free trial. Click <a href="https://testwebsite.asoroautomotive.com/contact/" class="paymentLink" target="_">Here</a> to speak with a real mechanic.`,
-        'receiver'
-      );
-      setRequestCount(0);
-      return;
-    }
-
+    setLoading(true);
     try {
-      const res = await fetch('https://aibackend.asoroautomotive.com/chat', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          car_make: data.car_make,
+          car_model: data.car_model,
+          car_year: data.car_year,
+          fault_code,
+          engine_type: data.engine_type,
+          requestCount,
+          aiType:"PAID"
+        }),
       });
-      const data = await res.json();
-      setRequestCount((count) => count + 1);
+      const dataAi = await res.json();
+      setRequestCount(count => count + 1);
+      displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
+      setTimeout(()=>{
+        displayOnScreen(
+          `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+          "others"
+        );
+      },3000)
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      if (data.data) {
-        displayOnScreen(data.data, 'receiver');
+  const firstMessage = async () => {
+    setLoading(true);
+    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative.`;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          car_make: data.car_make,
+          car_model: data.car_model,
+          car_year: data.car_year,
+          fault_code,
+          engine_type: data.engine_type,
+          requestCount
+        }),
+      });
+      const dataAi = await res.json();
+
+      if (dataAi.data) {
+          displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
+          setTimeout(()=>{
+            displayOnScreen(
+              `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+              "others"
+            );
+          },3000)
       }
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,53 +111,50 @@ export default function PaidPage() {
     }
   };
 
-
-  const closeAll = () => {
-    setLoginDisplayHandler("none");
-    setSignupDisplayHandler("none");
-    setWrapperDisplayHandler("none");
-  };
+  useEffect(() => {
+    if (data && !firstMessageCalled.current) {
+      firstMessage(); // Call firstMessage only if data is ready and not already called
+      firstMessageCalled.current = true; // Mark as called
+    }
+  }, [data]);
 
   useEffect(() => {
-    console.log(data);
-
     const timeoutId = setTimeout(() => {
-      if (!data) {
-        console.log("error");
-        navigate(`/${storedValues.car_make}/${storedValues.car_model}/${storedValues.car_year}/${storedValues.engine_type}`);
-      } else if(data.subscription_status !== "active")  {
-        console.log("good");
-        navigate(`/${data.username}`); // Redirect on success
-      }else{
-        console.log("better");
-        navigate(`/${data.username}/paid`); // Redirect on success
+      if (!data || loginStatus===false) {
+        navigate(`/${make}/${model}/${year}/${type}/${fault_code}`);
+      } else {
+        navigate(`/${data.username}/paid`);
       }
     }, 100);
-
-    setLoginDisplayHandler("none");
-    setSignupDisplayHandler("none");
-    setVerificationDisplayHandler("none");
-    setWrapperDisplayHandler("none");
 
     if (innerContRef.current) {
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
     }
 
-    return () => clearTimeout(timeoutId); // Clean up the timeout
+    return () => clearTimeout(timeoutId);
   }, [data, messages, navigate]);
 
   return (
     <div className="container">
       <div className="cont_header">
-      <SubscriptionSuccessHeader /> 
+        <SubscriptionSuccessHeader/>
       </div>
       <div className="innerCont" ref={innerContRef}>
-        <div className="wrapper" style={{ display: wrapperDisplayHandler }} onClick={closeAll}></div>
-        {messages.map((msg, index) => (
-          <div key={index} className={msg.role}>
-            <div className={`${msg.role}Inner`} dangerouslySetInnerHTML={{ __html: msg.elem }} />
-          </div>
-        ))}
+        {messages.map((msg, index) => {
+          const isError = msg.elem.includes("An error occurred");
+          const messageClass = isError ? 'errorMessage' : msg.role;
+
+          // Show AnimatedMessage if loading
+
+          return (
+            <div key={index} className={messageClass}>
+              <div className={`${messageClass}Inner`} dangerouslySetInnerHTML={{ __html: msg.elem }} />
+            </div>
+          );
+        })}
+        {loading && !messages.some(msg => msg.role === 'reciever' && loading) && (
+          <AnimatedMessage role="reciever" />
+        )}
       </div>
       <div className="inputSection">
         <input
@@ -156,4 +170,46 @@ export default function PaidPage() {
       </div>
     </div>
   );
+}
+function formatStringAndWrapDivs(inputString) {
+  const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
+  const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
+
+  const urls = [];
+  let urlMap = {};
+
+  // Replace URLs with placeholders
+  let placeholderText = inputString.replace(urlPattern, (url, offset) => {
+      const beforeText = inputString.slice(0, offset);
+      const afterText = inputString.slice(offset + url.length);
+      const isEmail = emailPattern.test(beforeText) || emailPattern.test(afterText);
+
+      if (!isEmail) {
+          const placeholder = `__URL_PLACEHOLDER_${urls.length}__`;
+          urls.push(url);
+          urlMap[placeholder] = url;
+          return placeholder;
+      }
+      return url;
+  });
+
+  // Split the text into sentences
+  const sentences = placeholderText.split('.');
+
+  let modifiedText = "";
+  sentences.forEach((sentence) => {
+      const trimmedSentence = sentence.trim();
+      if (trimmedSentence) {
+          // Make the bold formatting changes
+          const formattedSentence = trimmedSentence.replace(/\*\*(.*?)\*\*/, '<div style="display: block; text-decoration: underline;"><b>$1</b></div>');
+          modifiedText += `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`;
+      }
+  });
+
+  // Replace URL placeholders with the original URLs
+  modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
+      return urlMap[placeholder] || placeholder;
+  });
+
+  return modifiedText;
 }
