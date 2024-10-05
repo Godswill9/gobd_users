@@ -16,32 +16,35 @@ const SuccessPage = () => {
     useEffect(() => {
         const handleAsyncOperations = async () => {
             setLoading(true); // Set loading to true before starting operations
-    
-            if (data) {
                 try {
+                    console.log(data)
                     // Update user information
                     await updateUser();
-                    // Save payment information
-                    await savePayment();
-                    // Redirect on successful payment
-                    window.location.href = `/${data.username}/paid`; // Redirect using window.location
                 } catch (error) {
                     console.error('Error during async operations:', error);
                 }
-            } else {
-                // Ensure all segments are present in the redirect
-                if (make && model && year && type && fault_code) {
-                    window.location.href = `/${make}/${model}/${year}/${type}/${fault_code}`; // Redirect if data is not available
-                } else {
-                    console.error('Missing localStorage items for navigation');
-                }
-            }
             
             setLoading(false); // Set loading to false after operations
         };
     
         handleAsyncOperations();
-    }, [data, make, model, year, type, fault_code]);
+    }, [data]);
+
+    useEffect(() => {
+        const handleAsyncOperations = async () => {
+            setLoading(true); // Set loading to true before starting operations
+                try {
+                    await savePayment();
+                    // window.location.href = `/${data.username}/paid`; // Redirect using window.location
+                } catch (error) {
+                    console.error('Error during async operations:', error);
+                }
+            
+            setLoading(false); // Set loading to false after operations
+        };
+    
+        handleAsyncOperations();
+    }, [data]);
     
 
     const updateUser = async () => {
@@ -79,6 +82,9 @@ const SuccessPage = () => {
                 throw new Error('Failed to save payment');
             }
             await response.json(); // Optionally handle response if needed
+            setTimeout(()=>{
+                 window.location.href = `/${data.username}/paid`; 
+            },3000)
             // navigate(`/${data.username}/paid`);
         } catch (error) {
             console.error('Payment saving error:', error);
@@ -94,6 +100,7 @@ const SuccessPage = () => {
         <div className="success-page">
             <h2>Payment Successful! 🎉🤝</h2>
             <p>Your payment has been processed successfully.</p>
+            <p>Redirecting you now...</p>
         </div>
     );
 };
