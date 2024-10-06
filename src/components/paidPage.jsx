@@ -111,28 +111,28 @@ export default function PaidPage() {
     }
   };
 
-  useEffect(() => {
-    if (data && !firstMessageCalled.current) {
-      firstMessage(); // Call firstMessage only if data is ready and not already called
-      firstMessageCalled.current = true; // Mark as called
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data && !firstMessageCalled.current) {
+  //     firstMessage(); // Call firstMessage only if data is ready and not already called
+  //     firstMessageCalled.current = true; // Mark as called
+  //   }
+  // }, [data]);
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (!data || loginStatus===false) {
-        navigate(`/${make}/${model}/${year}/${type}/${fault_code}`);
-      } else {
-        navigate(`/${data.username}/paid`);
-      }
-    }, 100);
+  // useEffect(() => {
+  //   // const timeoutId = setTimeout(() => {
+  //   //   if (!data || loginStatus===false) {
+  //   //     navigate(`/${make}/${model}/${year}/${type}/${fault_code}`);
+  //   //   } else {
+  //       // navigate(`/${data.username}/paid`);
+  //   //   }
+  //   // }, 100);
 
-    if (innerContRef.current) {
-      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
-    }
+  //   if (innerContRef.current) {
+  //     innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+  //   }
 
-    return () => clearTimeout(timeoutId);
-  }, [data, messages, navigate]);
+  //   return () => clearTimeout(timeoutId);
+  // }, [data, messages, navigate]);
 
   return (
     <div className="container">

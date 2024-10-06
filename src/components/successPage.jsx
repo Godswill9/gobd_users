@@ -13,38 +13,38 @@ const SuccessPage = () => {
     const fault_code = localStorage.getItem('fault_code');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const handleAsyncOperations = async () => {
-            setLoading(true); // Set loading to true before starting operations
-                try {
-                    console.log(data)
-                    // Update user information
-                    await updateUser();
-                } catch (error) {
-                    console.error('Error during async operations:', error);
-                }
+    // useEffect(() => {
+    //     const handleAsyncOperations = async () => {
+    //         setLoading(true); // Set loading to true before starting operations
+    //             try {
+    //                 console.log(data)
+    //                 // Update user information
+    //                 await updateUser();
+    //             } catch (error) {
+    //                 console.error('Error during async operations:', error);
+    //             }
             
-            setLoading(false); // Set loading to false after operations
-        };
+    //         setLoading(false); // Set loading to false after operations
+    //     };
     
-        handleAsyncOperations();
-    }, [data]);
+    //     handleAsyncOperations();
+    // }, [data]);
 
     useEffect(() => {
-        const handleAsyncOperations = async () => {
-            setLoading(true); // Set loading to true before starting operations
-                try {
-                    await savePayment();
-                    // window.location.href = `/${data.username}/paid`; // Redirect using window.location
-                } catch (error) {
-                    console.error('Error during async operations:', error);
-                }
+        // const handleAsyncOperations = async () => {
+        //     setLoading(true); // Set loading to true before starting operations
+        //         try {
+        //             await savePayment();
+                    window.location.href = `/${localStorage.getItem("email")}/paid`; // Redirect using window.location
+        //         } catch (error) {
+        //             console.error('Error during async operations:', error);
+        //         }
             
-            setLoading(false); // Set loading to false after operations
-        };
+        //     setLoading(false); // Set loading to false after operations
+        // };
     
-        handleAsyncOperations();
-    }, [data]);
+        // handleAsyncOperations();
+    }, []);
     
 
     const updateUser = async () => {
