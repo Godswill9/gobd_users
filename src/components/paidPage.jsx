@@ -118,7 +118,7 @@ export default function PaidPage() {
   //   }
   // }, [data]);
 
-  // useEffect(() => {
+  useEffect(() => {
   //   // const timeoutId = setTimeout(() => {
   //   //   if (!data || loginStatus===false) {
   //   //     navigate(`/${make}/${model}/${year}/${type}/${fault_code}`);
@@ -127,12 +127,12 @@ export default function PaidPage() {
   //   //   }
   //   // }, 100);
 
-  //   if (innerContRef.current) {
-  //     innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
-  //   }
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
 
   //   return () => clearTimeout(timeoutId);
-  // }, [data, messages, navigate]);
+  }, []);
 
   return (
     <div className="container">
