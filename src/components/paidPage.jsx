@@ -101,7 +101,7 @@ export default function PaidPage() {
 
     displayOnScreen(inputMessage, 'sender');
     setInputMessage('');
-    replyMessage(inputMessage);
+    replyMessage(`${inputMessage}. Help me fix as a mechanic`);
   };
 
   const handleKeyDown = (event) => {
@@ -111,12 +111,12 @@ export default function PaidPage() {
     }
   };
 
-  // useEffect(() => {
-  //   if (data && !firstMessageCalled.current) {
-  //     firstMessage(); // Call firstMessage only if data is ready and not already called
-  //     firstMessageCalled.current = true; // Mark as called
-  //   }
-  // }, [data]);
+  useEffect(() => {
+    if (!firstMessageCalled.current) {
+      firstMessage(); // Call firstMessage only if data is ready and not already called
+      firstMessageCalled.current = true; // Mark as called
+    }
+  }, []);
 
   useEffect(() => {
   //   // const timeoutId = setTimeout(() => {
