@@ -63,7 +63,7 @@ export default function PaidPage() {
 
   const firstMessage = async () => {
     setLoading(true);
-    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative.`;
+    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **.Symptoms**, **.Potential Causes**, and **.Possible Solutions**. Keep it concise and informative.`;
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
