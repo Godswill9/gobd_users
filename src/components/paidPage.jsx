@@ -63,8 +63,8 @@ export default function PaidPage() {
 
   const firstMessage = async () => {
     setLoading(true);
-    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **.Symptoms**, **.Potential Causes**, and **.Possible Solutions**. Keep it concise and informative.`;
-    try {
+    const message = `As a mechanic, for the ${car_year} ${car_make} ${car_model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words `;
+   try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -75,12 +75,14 @@ export default function PaidPage() {
           car_year: year,
           fault_code,
           engine_type: type,
-          requestCount
+          requestCount,
+          aiType:"PAID"
         }),
       });
       const dataAi = await res.json();
 
       if (dataAi.data) {
+        setRequestCount((count) => count + 1);
           displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
           setTimeout(()=>{
             displayOnScreen(
@@ -95,6 +97,7 @@ export default function PaidPage() {
       setLoading(false);
     }
   };
+
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
