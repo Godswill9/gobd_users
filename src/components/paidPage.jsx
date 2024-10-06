@@ -36,11 +36,11 @@ export default function PaidPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          car_make: data.car_make,
-          car_model: data.car_model,
-          car_year: data.car_year,
+          car_make: make,
+          car_model: model,
+          car_year: year,
           fault_code,
-          engine_type: data.engine_type,
+          engine_type: type,
           requestCount,
           aiType:"PAID"
         }),
@@ -70,11 +70,11 @@ export default function PaidPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message,
-          car_make: data.car_make,
-          car_model: data.car_model,
-          car_year: data.car_year,
+          car_make: make,
+          car_model: model,
+          car_year: year,
           fault_code,
-          engine_type: data.engine_type,
+          engine_type: type,
           requestCount
         }),
       });
