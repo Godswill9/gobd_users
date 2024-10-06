@@ -176,6 +176,7 @@ body {
   border: 1px solid #000000; /* Theme color for border */
   border-radius: 4px;
   color: white;
+  font-weight: bold;
   background: rgba(12, 12, 12, 0.158);
   transition: border 0.3s; /* Smooth transition for border color */
 }
@@ -331,7 +332,9 @@ body {
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
+  color: white;
   background: rgba(34, 38, 41, 0.7960784314);
+  font-weight: bold;
 }
 .signup-container .btn {
   background-color: #ff7b00;
@@ -377,6 +380,8 @@ body {
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
+  color: white;
+  font-weight: bold;
 }
 .verification-container .btn {
   background-color: #28a745;
@@ -429,6 +434,8 @@ body {
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-weight: bold;
+  color: white;
   background: #1b1b1b;
 }
 .login-container .btn {
