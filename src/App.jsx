@@ -12,6 +12,7 @@ import Signup from './components/signup_popup.jsx';
 import VerificationCode from './components/verify_popup.jsx';
 import Checkout from './components/checkout.jsx';
 import LoadingPage from './components/loadingPage.jsx';
+import TestPage from './components/testPage.jsx';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
        <Route path="/:car_make/:car_model/:car_year/:engine_type/:fault_code" element={<Homepage />} />
        {/* <Route path="/:user" element={<LoggedInPage/>} /> */}
        <Route path="/:user/paid" element={<PaidPage/>} />
+       <Route path="/" element={<TestPage/>} />
        <Route path={"/login"} element={<Login/>}></Route>
        <Route path={"/user_verification"} element={<VerificationCode/>}></Route>
        {/* <Route path={"/signup"} element={<Signup/>}></Route> */}
