@@ -1,5 +1,6 @@
-import "../../stylings/styles.css"
+import "../../stylings/styles.css";
 import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
 function TestPage() {
   const [carDetails, setCarDetails] = useState({
@@ -7,15 +8,16 @@ function TestPage() {
     carBrand: '',
     carYear: '',
     carEngineType: '',
+    faultCode: '',
   });
 
   useEffect(() => {
     // Read car details from cookies
-    const carMake = readCookie('carMake');
-    const carBrand = readCookie('carBrand');
-    const carYear = readCookie('carYear');
-    const carEngineType = readCookie('carEngineType');
-    const faultCode = readCookie('faultCode');
+    const carMake = Cookies.get('carMake') || '';
+    const carBrand = Cookies.get('carBrand') || '';
+    const carYear = Cookies.get('carYear') || '';
+    const carEngineType = Cookies.get('carEngineType') || '';
+    const faultCode = Cookies.get('faultCode') || '';
 
     // Set car details in state
     setCarDetails({
@@ -23,7 +25,7 @@ function TestPage() {
       carBrand,
       carYear,
       carEngineType,
-      faultCode
+      faultCode,
     });
   }, []);
 
@@ -34,7 +36,7 @@ function TestPage() {
       <p>Car Brand: {carDetails.carBrand}</p>
       <p>Car Year: {carDetails.carYear}</p>
       <p>Car Engine Type: {carDetails.carEngineType}</p>
-      <p>Car faultCode: {carDetails.faultCode}</p>
+      <p>Car Fault Code: {carDetails.faultCode}</p>
     </div>
   );
 }
