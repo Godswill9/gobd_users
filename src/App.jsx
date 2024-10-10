@@ -21,10 +21,11 @@ function App() {
       <BrowserRouter>
       <AppProvider>
        <Routes>
-       <Route path="/:car_make/:car_model/:car_year/:engine_type/:fault_code" element={<Homepage />} />
+       {/* <Route path="/:car_make/:car_model/:car_year/:engine_type/:fault_code" element={<Homepage />} /> */}
        {/* <Route path="/:user" element={<LoggedInPage/>} /> */}
        <Route path="/:user/paid" element={<PaidPage/>} />
-       <Route path="/:car" element={<TestPage/>} />
+       {/* <Route path="/:car" element={<TestPage/>} /> */}
+       <Route path="/:car" element={<Homepage/>} />
        <Route path={"/login"} element={<Login/>}></Route>
        <Route path={"/user_verification"} element={<VerificationCode/>}></Route>
        {/* <Route path={"/signup"} element={<Signup/>}></Route> */}

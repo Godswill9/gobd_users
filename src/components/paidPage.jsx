@@ -124,8 +124,9 @@ export default function PaidPage() {
   useEffect(() => {
   //   // const timeoutId = setTimeout(() => {
   //   //   if (!data || loginStatus===false) {
-  //   //     navigate(`/${make}/${model}/${year}/${type}/${fault_code}`);
-  //   //   } else {
+    // const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
+        // navigate(`/${carString}`);
+  //  } else {
   //       // navigate(`/${data.username}/paid`);
   //   //   }
   //   // }, 100);

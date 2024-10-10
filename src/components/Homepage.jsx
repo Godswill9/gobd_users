@@ -16,7 +16,8 @@ import AnimatedMessage from './AnimatedMessage'; // Import the AnimatedMessage c
 export default function Homepage() {
   const { data, loginStatus } = useAppContext();
   const [inputMessage, setInputMessage] = useState('');
-  const { car_make, car_model, car_year, engine_type, fault_code } = useParams();
+  // const { car_make, car_model, car_year, engine_type, fault_code } = useParams();
+  const { car } = useParams();
   const [messages, setMessages] = useState([]);
   const [loginDisplayHandler, setloginDisplayHandler] = useState("none");
   const [verificationDisplayHandler, setverificationDisplayHandler] = useState("none");
@@ -28,7 +29,24 @@ export default function Homepage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const firstMessageCalled = useRef(false); // To track if the first message has been called
+  const parseCarParams = (carString) => {
+    const paramsArray = carString.split('&');
+    return {
+      carMake: paramsArray[0] || '',
+      carBrand: paramsArray[1] || '',
+      carYear: paramsArray[2] || '',
+      carEngineType: paramsArray[3] || '',
+      faultCode: paramsArray[4] || '',
+    };
+  };
+  const carDetails = parseCarParams(car);
 
+  var car_make = carDetails.carMake
+  var car_model = carDetails.carBrand
+  var car_year = carDetails.carYear
+  var engine_type = carDetails.carEngineType
+  var fault_code = carDetails.faultCode
+  
     localStorage.setItem('car_make', car_make);
     localStorage.setItem('car_model', car_model);
     localStorage.setItem('car_year', car_year);
@@ -152,22 +170,24 @@ export default function Homepage() {
 
 
   useEffect(() => {
-    // console.log(data);
     const timeoutId = setTimeout(() => {
-      if (!data || loginStatus===false) {
-        navigate(`/${car_make}/${car_model}/${car_year}/${engine_type}/${fault_code}`);
+      if (!data || loginStatus === false) {
+        // Use encodeURIComponent to ensure the URL is valid
+        const carString = `${encodeURIComponent(car_make)}&${encodeURIComponent(car_model)}&${encodeURIComponent(car_year)}&${encodeURIComponent(engine_type)}&${encodeURIComponent(fault_code)}`;
+        navigate(`/${carString}`);
       } else {
         navigate(`/${data.username}/paid`); // Redirect on success
       }
     }, 100);
-
+  
     if (innerContRef.current) {
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
     }
-
+  
     return () => clearTimeout(timeoutId); // Clean up the timeout
-  }, [data, messages, navigate]);
-
+  }, [data, loginStatus, navigate, car_make, car_model, car_year, engine_type, fault_code]);
+  
+  
   return (
     <div className="container">
       <div className="cont_header">
