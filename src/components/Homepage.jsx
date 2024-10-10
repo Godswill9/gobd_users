@@ -7,14 +7,14 @@ import Login from './login_popup.jsx';
 import VerificationCode from './verify_popup.jsx';
 import Signup from './signup_popup.jsx';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppContext } from './appContext.jsx';
+// import { useAppContext } from './appContext.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AnimatedMessage from './AnimatedMessage'; // Import the AnimatedMessage component
 
 
 export default function Homepage() {
-  const { data, loginStatus } = useAppContext();
+  // const { data, loginStatus } = useAppContext();
   const [inputMessage, setInputMessage] = useState('');
   // const { car_make, car_model, car_year, engine_type, fault_code } = useParams();
   const { car } = useParams();
@@ -169,23 +169,23 @@ export default function Homepage() {
   };
 
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (!data || loginStatus === false) {
-        // Use encodeURIComponent to ensure the URL is valid
-        const carString = `${encodeURIComponent(car_make)}&${encodeURIComponent(car_model)}&${encodeURIComponent(car_year)}&${encodeURIComponent(engine_type)}&${encodeURIComponent(fault_code)}`;
-        navigate(`/${carString}`);
-      } else {
-        navigate(`/${data.username}/paid`); // Redirect on success
-      }
-    }, 100);
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     if (!data || loginStatus === false) {
+  //       // Use encodeURIComponent to ensure the URL is valid
+  //       const carString = `${encodeURIComponent(car_make)}&${encodeURIComponent(car_model)}&${encodeURIComponent(car_year)}&${encodeURIComponent(engine_type)}&${encodeURIComponent(fault_code)}`;
+  //       navigate(`/${carString}`);
+  //     } else {
+  //       navigate(`/${data.username}/paid`); // Redirect on success
+  //     }
+  //   }, 100);
   
-    if (innerContRef.current) {
-      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
-    }
+  //   if (innerContRef.current) {
+  //     innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+  //   }
   
-    return () => clearTimeout(timeoutId); // Clean up the timeout
-  }, [data, loginStatus, navigate, car_make, car_model, car_year, engine_type, fault_code]);
+  //   return () => clearTimeout(timeoutId); // Clean up the timeout
+  // }, [data, loginStatus, navigate, car_make, car_model, car_year, engine_type, fault_code]);
   
   
   return (

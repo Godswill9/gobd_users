@@ -19,7 +19,7 @@ function App() {
   return (
     <div>
       <BrowserRouter>
-      <AppProvider>
+      {/* <AppProvider> */}
        <Routes>
        {/* <Route path="/:car_make/:car_model/:car_year/:engine_type/:fault_code" element={<Homepage />} /> */}
        {/* <Route path="/:user" element={<LoggedInPage/>} /> */}
@@ -34,7 +34,7 @@ function App() {
        <Route path={"/success"} element={<SuccessPage/>}></Route>
        <Route path={"/error"} element={<ErrorPage/>}></Route>
       </Routes>
-    </AppProvider>
+    {/* </AppProvider> */}
       </BrowserRouter>
     </div>
   );

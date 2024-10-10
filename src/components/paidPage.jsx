@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import "../../stylings/styles.css";
 import SubscriptionSuccessHeader from './header_subscribe.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAppContext } from './appContext.jsx';
+// import { useAppContext } from './appContext.jsx';
 import AnimatedMessage from './AnimatedMessage'; // Import the AnimatedMessage component
 
 export default function PaidPage() {
-  const { data, loginStatus } = useAppContext();
+  // const { data, loginStatus } = useAppContext();
   const [inputMessage, setInputMessage] = useState('');
   const { user } = useParams();
   const [messages, setMessages] = useState([]);

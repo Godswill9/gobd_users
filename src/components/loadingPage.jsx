@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../stylings/styles.css';
-import { useAppContext } from './appContext';
+// import { useAppContext } from './appContext';
 import Cookies from 'js-cookie'; // Assuming you use js-cookie for cookie handling
 import { toast } from 'react-toastify';
 
 function LoadingPage() {
-    const { data } = useAppContext();
+    // const { data } = useAppContext();
     const navigate = useNavigate();
 
     useEffect(() => {
