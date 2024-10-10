@@ -1,10 +1,19 @@
 import "../../stylings/styles.css";
-import React, { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
+import HeaderUnpaid from "./header_unpaid";
+import AnimatedMessage from "./AnimatedMessage";
 
 function TestPage() {
   const { car } = useParams();
-  
+  const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
+  const innerContRef = useRef(null);
+  const sendButtonRef = useRef(null);
+  const navigate = useNavigate();
+
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
     const paramsArray = carString.split('&');
@@ -17,17 +26,166 @@ function TestPage() {
     };
   };
   const carDetails = parseCarParams(car);
-  
+
+  const handleSubscribe = () => {
+    navigate('/checkout')
+  };
+
+  const displayOnScreen = (elem, role, options = []) => {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { elem, role, options }
+    ]);
+  };
+
+  const handleSendMessage = () => {
+    if (!inputMessage.trim()) return;
+
+    displayOnScreen(inputMessage, 'sender');
+    setInputMessage('');
+    replyMessage(inputMessage);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const replyMessage = async (message) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message:message, requestCount:requestCount, aiType:"FREE" }),
+    });
+      const data = await res.json();
+
+      if (data.data) {
+        setRequestCount((count) => count + 1);
+        if (data.data=="EXHAUSTED" ) {
+          displayOnScreen(
+            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+            'receiver'
+          )
+          setTimeout(()=>{
+            displayOnScreen(
+              `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+              "others"
+            );
+          },3000)
+        }
+        else{
+          displayOnScreen(formatStringAndWrapDivs(data.data), 'receiver');
+          setTimeout(()=>{
+            displayOnScreen(
+              `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+              "others"
+            );
+          },3000)
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }finally {
+      setLoading(false);
+    }
+  };
+
+
+
+  useEffect(()=>{
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
+  },[])
+
+
   return (
-    <div className="headTest">
-      <div>Hello, this is the test page</div>
-      <p>Car Make: {carDetails.carMake}</p>
-      <p>Car Brand: {carDetails.carBrand}</p>
-      <p>Car Year: {carDetails.carYear}</p>
-      <p>Car Engine Type: {carDetails.carEngineType}</p>
-      <p>Fault Code: {carDetails.faultCode}</p>
+     <div className="container">
+      <div className="cont_header">
+        <HeaderUnpaid onSubscribe={handleSubscribe} />
+      </div>
+      <div className="innerCont" ref={innerContRef}>
+        {/* <AnimatedMessage role="reciever" /> */}
+        {messages.map((msg, index) => {
+          const isError = msg.elem.includes("An error occurred");
+          const messageClass = isError ? 'errorMessage' : msg.role;
+
+          // Show AnimatedMessage if loading
+
+          return (
+            <div key={index} className={messageClass}>
+              <div className={`${messageClass}Inner`} dangerouslySetInnerHTML={{ __html: msg.elem }} />
+            </div>
+          );
+        })}
+        {loading && !messages.some(msg => msg.role === 'reciever' && loading) && (
+          <AnimatedMessage role="reciever" />
+        )}
+      </div>
+      <div className="inputSection">
+        <input
+          type="text"
+          placeholder="Enter your message..."
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button ref={sendButtonRef} onClick={handleSendMessage} disabled={!inputMessage.trim()}>
+          Send
+        </button>
+      </div>
     </div>
   );
 }
 
 export default TestPage;
+
+
+function formatStringAndWrapDivs(inputString) {
+  const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
+  const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
+
+  const urls = [];
+  let urlMap = {};
+
+  // Replace URLs with placeholders
+  let placeholderText = inputString.replace(urlPattern, (url, offset) => {
+      const beforeText = inputString.slice(0, offset);
+      const afterText = inputString.slice(offset + url.length);
+      const isEmail = emailPattern.test(beforeText) || emailPattern.test(afterText);
+
+      if (!isEmail) {
+          const placeholder = `__URL_PLACEHOLDER_${urls.length}__`;
+          urls.push(url);
+          urlMap[placeholder] = url;
+          return placeholder;
+      }
+      return url;
+  });
+
+  // Split the text into sentences
+  const sentences = placeholderText.split('.');
+
+  let modifiedText = "";
+  sentences.forEach((sentence) => {
+      const trimmedSentence = sentence.trim();
+      if (trimmedSentence) {
+          // Make the bold formatting changes
+          const formattedSentence = trimmedSentence.replace(/\*\*(.*?)\*\*/, '<div style="display: block; text-decoration: underline;"><b>$1</b></div>');
+          modifiedText += `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`;
+      }
+  });
+
+  // Replace URL placeholders with the original URLs
+  modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
+      return urlMap[placeholder] || placeholder;
+  });
+
+  return modifiedText;
+}
