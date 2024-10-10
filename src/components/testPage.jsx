@@ -6,21 +6,18 @@ function TestPage() {
   const { car } = useParams();
   
   // Split the car string to get individual parameters
-  const params = new URLSearchParams(car.replace(/&/g, '&'));
-  const carMake = params.get('a') || '';
-  const carBrand = params.get('b') || '';
-  const carYear = params.get('c') || '';
-  const carEngineType = params.get('d') || '';
-  const faultCode = params.get('e') || '';
-
-  const [carDetails, setCarDetails] = useState({
-    carMake,
-    carBrand,
-    carYear,
-    carEngineType,
-    faultCode,
-  });
-
+  const parseCarParams = (carString) => {
+    const paramsArray = carString.split('&');
+    return {
+      carMake: paramsArray[0] || '',
+      carBrand: paramsArray[1] || '',
+      carYear: paramsArray[2] || '',
+      carEngineType: paramsArray[3] || '',
+      faultCode: paramsArray[4] || '',
+    };
+  };
+  const carDetails = parseCarParams(car);
+  
   return (
     <div className="headTest">
       <div>Hello, this is the test page</div>
