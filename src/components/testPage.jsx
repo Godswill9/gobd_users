@@ -1,6 +1,7 @@
 import "../../stylings/styles.css";
 import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
+import { useParams } from "react-router-dom";
 
 function TestPage() {
   const [carDetails, setCarDetails] = useState({
@@ -10,6 +11,8 @@ function TestPage() {
     carEngineType: '',
     faultCode: '',
   });
+  const {car} = useParams();
+  
 
   useEffect(() => {
     // Read car details from cookies
@@ -32,11 +35,7 @@ function TestPage() {
   return (
     <div className="headTest">
       <div>Hello, this is the test page</div>
-      <p>Car Make: {carDetails.carMake}</p>
-      <p>Car Brand: {carDetails.carBrand}</p>
-      <p>Car Year: {carDetails.carYear}</p>
-      <p>Car Engine Type: {carDetails.carEngineType}</p>
-      <p>Car Fault Code: {carDetails.faultCode}</p>
+      <p>Car Make: {car}</p>
     </div>
   );
 }
