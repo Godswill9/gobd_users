@@ -13,6 +13,7 @@ function TestPage() {
   const innerContRef = useRef(null);
   const sendButtonRef = useRef(null);
   const navigate = useNavigate();
+  const firstMessageCalled = useRef(false);
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -95,6 +96,48 @@ function TestPage() {
       setLoading(false);
     }
   };
+
+  
+  const firstMessage = async () => {
+    setLoading(true);
+    const message = `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with fault code ${carDetails.faultCode}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 70 words `;
+   try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          requestCount,
+          aiType:"FREE"
+        }),
+      });
+      const dataAi = await res.json();
+
+      if (dataAi.data) {
+        setRequestCount((count) => count + 1);
+          displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
+          setTimeout(()=>{
+            displayOnScreen(
+              `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+              "others"
+            );
+          },3000)
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  
+  useEffect(() => {
+    if (!firstMessageCalled.current) {
+      firstMessage(); // Call firstMessage only if data is ready and not already called
+      firstMessageCalled.current = true; // Mark as called
+    }
+  }, []);
 
 
 
