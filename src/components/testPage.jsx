@@ -28,13 +28,9 @@ function TestPage() {
   };
   const carDetails = parseCarParams(car);
 
-  // const handleSubscribe = () => {
-  //   navigate('/checkout')
-  // };
   const handleSubscribe = () => {
-    window.location.href = 'https://checkout.paystack.com/fa2jnrajxxzq5jl';
-};
-
+    navigate('/checkout')
+  };
 
   const displayOnScreen = (elem, role, options = []) => {
     setMessages((prevMessages) => [
