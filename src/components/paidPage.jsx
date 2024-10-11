@@ -25,7 +25,10 @@ export default function PaidPage() {
 
   const displayOnScreen = (elem, role) => {
     setMessages(prevMessages => [...prevMessages, { elem, role }]);
-    console.log(messages);
+    // console.log(messages);
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
   };
 
   const replyMessage = async (message) => {
@@ -55,7 +58,11 @@ export default function PaidPage() {
         );
       },3000)
     } catch (error) {
-      console.error('Error:', error);
+      // console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
     } finally {
       setLoading(false);
     }
@@ -92,7 +99,11 @@ export default function PaidPage() {
           },3000)
       }
     } catch (error) {
-      console.error('Error:', error);
+      // console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
     } finally {
       setLoading(false);
     }
@@ -104,6 +115,9 @@ export default function PaidPage() {
 
     displayOnScreen(inputMessage, 'sender');
     setInputMessage('');
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
     replyMessage(`${inputMessage}. Help me fix as a mechanic`);
   };
 

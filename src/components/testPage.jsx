@@ -37,6 +37,9 @@ function TestPage() {
       ...prevMessages,
       { elem, role, options }
     ]);
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
   };
 
   const handleSendMessage = () => {
@@ -44,6 +47,9 @@ function TestPage() {
 
     displayOnScreen(inputMessage, 'sender');
     setInputMessage('');
+    if (innerContRef.current) {
+      innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
     replyMessage(inputMessage);
   };
 
@@ -91,7 +97,11 @@ function TestPage() {
         }
       }
     } catch (error) {
-      console.error('Error:', error);
+      // console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
     }finally {
       setLoading(false);
     }
@@ -125,6 +135,10 @@ function TestPage() {
       }
     } catch (error) {
       console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
     } finally {
       setLoading(false);
     }

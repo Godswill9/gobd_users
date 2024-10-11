@@ -123,7 +123,7 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
       console.log(res);
 
       if (res.message === "success") {
-        toast.success('Success... redirecting to login!', {
+        toast.success('Success!', {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
