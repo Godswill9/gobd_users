@@ -20,6 +20,7 @@ function TestPage() {
 Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
 
 var val= Cookies.get("jwt_test")
+var val2= Cookies.get("jwt_user")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -117,6 +118,11 @@ var val= Cookies.get("jwt_test")
   const firstMessage = async () => {
     setLoading(true);
     displayOnScreen(val, 'others');
+    if(val2){
+      displayOnScreen(val2, 'others');
+    }else{
+
+    }
     const message = `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with fault code ${carDetails.faultCode}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 70 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {

@@ -28,6 +28,7 @@ export default function PaidPage() {
 Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
 
 var val= Cookies.get("jwt_test")
+var val2= Cookies.get("jwt_user")
 
 
   const displayOnScreen = (elem, role) => {
@@ -78,6 +79,11 @@ var val= Cookies.get("jwt_test")
   const firstMessage = async () => {
     setLoading(true);
     displayOnScreen(val, 'others');
+    if(val2){
+      displayOnScreen(val2, 'others');
+    }else{
+
+    }
     const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
