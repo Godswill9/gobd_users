@@ -17,10 +17,14 @@ function TestPage() {
   const firstMessageCalled = useRef(false);
 
 
-Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
+  // const make = localStorage.getItem('car_make');
+  // const model = localStorage.getItem('car_model');
+  // const year = localStorage.getItem('car_year');
+  // const type = localStorage.getItem('engine_type');
+  // const fault_code = localStorage.getItem('fault_code');
 
-var val= Cookies.get("jwt_test")
-var val2= Cookies.get("jwt_user")
+// var val= Cookies.get("jwt_test")
+var token= Cookies.get("jwt_user")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -38,6 +42,13 @@ var val2= Cookies.get("jwt_user")
   const handleSubscribe = () => {
     navigate('/checkout')
   };
+
+  Cookies.set('car_make', carDetails.make, { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('car_model', carDetails.carBrand, { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('car_year', carDetails.carYear, { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie to expire in 30 days
+
 
   const displayOnScreen = (elem, role, options = []) => {
     setMessages((prevMessages) => [
@@ -117,12 +128,11 @@ var val2= Cookies.get("jwt_user")
   
   const firstMessage = async () => {
     setLoading(true);
-    displayOnScreen(val, 'others');
-    if(val2){
-      displayOnScreen(val2, 'others');
-    }else{
+    // if(val2){
+    //   displayOnScreen(val2, 'others');
+    // }else{
 
-    }
+    // }
     const message = `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with fault code ${carDetails.faultCode}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 70 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
@@ -166,6 +176,39 @@ var val2= Cookies.get("jwt_user")
     }
   }, []);
 
+  
+  const checkUser = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt_user:token}),
+    });
+      const data = await res.json();
+
+      const timeoutId = setTimeout(() => {
+        if (!data || loginStatus===false) {
+      const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
+          navigate(`/${carString}`);
+     } else {
+          navigate(`/${data.username}/paid`);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+  
+    } catch (error) {
+      console.error('Error:', error);
+   
+    }
+  };
+
+useEffect(() => {
+  checkUser(token)  
+}, []);
+
 
 
   useEffect(()=>{
@@ -178,7 +221,7 @@ var val2= Cookies.get("jwt_user")
   return (
      <div className="container">
       <div className="cont_header">
-        <HeaderUnpaid onSubscribe={handleSubscribe} />
+        <HeaderUnpaid onSubscribe={handleSubscribe} login={()=>navigate(`/login`)}/>
       </div>
       <div className="innerCont" ref={innerContRef}>
         {/* <AnimatedMessage role="reciever" /> */}

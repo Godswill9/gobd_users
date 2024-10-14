@@ -10,7 +10,8 @@ function LoadingPage() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const ref = localStorage.getItem("ref");
+        // const ref = localStorage.getItem("ref");
+        var ref= Cookies.get("ref")
         if (ref) {
             confirmPayment(ref);
         } else {
@@ -43,13 +44,15 @@ function LoadingPage() {
     };
 
     const loginUser = async () => {
+        var email= Cookies.get("email")
+        var userPass= Cookies.get("userPass")
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email: localStorage.getItem("email"), password: localStorage.getItem("password") }),
+                body: JSON.stringify({ email:email, password: userPass }),
                 credentials: "include",
             });
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../../stylings/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from './appContext';
+import Cookies from 'js-cookie';
 
 const SuccessPage = () => {
     const { data } = useAppContext();
@@ -12,6 +13,10 @@ const SuccessPage = () => {
     const type = localStorage.getItem('engine_type');
     const fault_code = localStorage.getItem('fault_code');
     const navigate = useNavigate();
+
+
+    var token= Cookies.get("jwt_user")
+
 
     // useEffect(() => {
     //     const handleAsyncOperations = async () => {
@@ -30,24 +35,29 @@ const SuccessPage = () => {
     //     handleAsyncOperations();
     // }, [data]);
 
+    const checkUser = async (token) => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
+            method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ jwt_user:token}),
+        });
+          const data = await res.json();
+          savePayment(data)
+        } catch (error) {
+          console.error('Error:', error);
+       
+        }
+      };
+
     useEffect(() => {
-        // const handleAsyncOperations = async () => {
-        //     setLoading(true); // Set loading to true before starting operations
-        //         try {
-        //             await savePayment();
-                    window.location.href = `/${localStorage.getItem("email")}/paid`; // Redirect using window.location
-        //         } catch (error) {
-        //             console.error('Error during async operations:', error);
-        //         }
-            
-        //     setLoading(false); // Set loading to false after operations
-        // };
-    
-        // handleAsyncOperations();
+      checkUser(token)  
     }, []);
     
 
-    const updateUser = async () => {
+    const updateUser = async (data) => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/updateUser/${data.email}`, {
                 method: 'PUT',
@@ -55,19 +65,21 @@ const SuccessPage = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ subscription_status: data.subscription_status, id: data.id }),
+                body: JSON.stringify({ subscription_status: "active", id: data.id }),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to update user');
             }
             await response.json(); // Optionally handle response if needed
+
+            window.location.href = `/${Cookies.get("email")}/paid`; 
         } catch (error) {
             console.error('User update error:', error);
         }
     };
 
-    const savePayment = async () => {
+    const savePayment = async (data) => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/savePayment`, {
                 method: 'POST',
@@ -82,10 +94,7 @@ const SuccessPage = () => {
                 throw new Error('Failed to save payment');
             }
             await response.json(); // Optionally handle response if needed
-            setTimeout(()=>{
-                 window.location.href = `/${data.username}/paid`; 
-            },3000)
-            // navigate(`/${data.username}/paid`);
+            updateUser(data)
         } catch (error) {
             console.error('Payment saving error:', error);
         }

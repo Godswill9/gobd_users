@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../../stylings/styles.css';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import Cookies from 'js-cookie';
 
 const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDisplayHandler, setSignupDisplay, setwrapperDisplayHandler, car_make, car_model, car_year, engine_type }) => {
   const [data, setData] = useState({
@@ -151,6 +152,8 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
   };
 
   const payHandler = () => {
+    Cookies.set('email', data.email, { expires: 2});
+    Cookies.set('password', data.password, { expires: 2});
     fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
       method: "POST",
       credentials: "include",
@@ -165,7 +168,8 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
         if (res.data && res.data.authorization_url) {
           // Redirect using navigate
           window.location.href = res.data.authorization_url; 
-          localStorage.setItem("ref", res.data.reference);
+          // localStorage.setItem("ref", res.data.reference);
+          Cookies.set('ref', res.data.reference, { expires: 2});
         } else {
           console.error("Authorization URL not found in the response.");
           alert('Error: Authorization URL not found');

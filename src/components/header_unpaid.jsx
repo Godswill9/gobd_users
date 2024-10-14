@@ -2,7 +2,7 @@
 import React from 'react';
 import "../../stylings/styles.css"
 
-const HeaderUnpaid = ({ username, onSubscribe }) => {
+const HeaderUnpaid = ({ login, onSubscribe }) => {
 
   const payHandler = () => {
     fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
@@ -34,6 +34,7 @@ const HeaderUnpaid = ({ username, onSubscribe }) => {
     <header className="plain-header">
       <h2>Subscribe for full experience!👌👍</h2>
       <button onClick={onSubscribe} className="subscribe-button">Subscribe</button>
+      <button onClick={login} className="subscribe-button">login</button>
     </header>
   );
 };

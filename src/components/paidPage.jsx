@@ -18,17 +18,21 @@ export default function PaidPage() {
   const navigate = useNavigate();
   const firstMessageCalled = useRef(false); // To track if the first message has been called
 
-  // Retrieve from localStorage
-  const make = localStorage.getItem('car_make');
-  const model = localStorage.getItem('car_model');
-  const year = localStorage.getItem('car_year');
-  const type = localStorage.getItem('engine_type');
-  const fault_code = localStorage.getItem('fault_code');
+  // // Retrieve from localStorage
+  // const make = localStorage.getItem('car_make');
+  // const model = localStorage.getItem('car_model');
+  // const year = localStorage.getItem('car_year');
+  // const type = localStorage.getItem('engine_type');
+  // const fault_code = localStorage.getItem('fault_code');
+  
+  const make = Cookies.get('car_make');
+  const model = Cookies.get('car_model');
+  const year = Cookies.get('car_year');
+  const type = Cookies.get('engine_type');
+  const fault_code = Cookies.get('fault_code');
 
-Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
-
-var val= Cookies.get("jwt_test")
-var val2= Cookies.get("jwt_user")
+// var val= Cookies.get("jwt_test")
+var token= Cookies.get("jwt_user")
 
 
   const displayOnScreen = (elem, role) => {
@@ -78,12 +82,12 @@ var val2= Cookies.get("jwt_user")
 
   const firstMessage = async () => {
     setLoading(true);
-    displayOnScreen(val, 'others');
-    if(val2){
-      displayOnScreen(val2, 'others');
-    }else{
+    // displayOnScreen(val, 'others');
+    // if(val2){
+    //   displayOnScreen(val2, 'others');
+    // }else{
 
-    }
+    // }
     const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
@@ -149,21 +153,42 @@ var val2= Cookies.get("jwt_user")
     }
   }, []);
 
-  useEffect(() => {
-  //   // const timeoutId = setTimeout(() => {
-  //   //   if (!data || loginStatus===false) {
-    // const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
-        // navigate(`/${carString}`);
-  //  } else {
-  //       // navigate(`/${data.username}/paid`);
-  //   //   }
-  //   // }, 100);
+  const checkUser = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
+        method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt_user:token}),
+    });
+      const data = await res.json();
 
+      const timeoutId = setTimeout(() => {
+        if (!data || loginStatus===false) {
+      const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
+          navigate(`/${carString}`);
+     } else {
+          navigate(`/${data.username}/paid`);
+        }
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+  
+    } catch (error) {
+      console.error('Error:', error);
+   
+    }
+  };
+
+useEffect(() => {
+  checkUser(token)  
+}, []);
+
+  useEffect(() => {
     if (innerContRef.current) {
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
     }
-
-  //   return () => clearTimeout(timeoutId);
   }, []);
 
   return (
