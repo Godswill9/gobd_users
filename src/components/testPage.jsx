@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import HeaderUnpaid from "./header_unpaid";
 import AnimatedMessage from "./AnimatedMessage";
+import Cookies from 'js-cookie';
 
 function TestPage() {
   const { car } = useParams();
@@ -14,6 +15,11 @@ function TestPage() {
   const sendButtonRef = useRef(null);
   const navigate = useNavigate();
   const firstMessageCalled = useRef(false);
+
+
+Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
+
+var val= Cookies.get("jwt_test")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -110,6 +116,7 @@ function TestPage() {
   
   const firstMessage = async () => {
     setLoading(true);
+    displayOnScreen(val, 'others');
     const message = `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with fault code ${carDetails.faultCode}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 70 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {

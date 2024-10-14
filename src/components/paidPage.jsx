@@ -4,6 +4,8 @@ import SubscriptionSuccessHeader from './header_subscribe.jsx';
 import { useParams, useNavigate } from 'react-router-dom';
 // import { useAppContext } from './appContext.jsx';
 import AnimatedMessage from './AnimatedMessage'; // Import the AnimatedMessage component
+import Cookies from 'js-cookie';
+
 
 export default function PaidPage() {
   // const { data, loginStatus } = useAppContext();
@@ -22,6 +24,11 @@ export default function PaidPage() {
   const year = localStorage.getItem('car_year');
   const type = localStorage.getItem('engine_type');
   const fault_code = localStorage.getItem('fault_code');
+
+Cookies.set('jwt_test', "rice ad stew", { expires: 7 }); // Set cookie to expire in 7 days
+
+var val= Cookies.get("jwt_test")
+
 
   const displayOnScreen = (elem, role) => {
     setMessages(prevMessages => [...prevMessages, { elem, role }]);
@@ -70,6 +77,7 @@ export default function PaidPage() {
 
   const firstMessage = async () => {
     setLoading(true);
+    displayOnScreen(val, 'others');
     const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words `;
    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
