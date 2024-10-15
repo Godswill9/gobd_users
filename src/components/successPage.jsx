@@ -45,7 +45,7 @@ const SuccessPage = () => {
           body: JSON.stringify({ jwt_user:token}),
         });
           const data = await res.json();
-          savePayment(data)
+          savePayment(data.user)
         } catch (error) {
           console.error('Error:', error);
        
@@ -94,7 +94,7 @@ const SuccessPage = () => {
                 throw new Error('Failed to save payment');
             }
             await response.json(); // Optionally handle response if needed
-            updateUser(data)
+            updateUser(data.user)
         } catch (error) {
             console.error('Payment saving error:', error);
         }
