@@ -59,7 +59,7 @@ function LoadingPage() {
             const res = await response.json();
 
             if (res.status === "success") {
-                Cookies.set('jwt_user', res.accessToken, { expires: 7 });
+                Cookies.set('jwt_user', res.accessToken, { expires: 30 });
             } else {
                 handleError(res.message || 'Login failed. Please try again.');
             }
