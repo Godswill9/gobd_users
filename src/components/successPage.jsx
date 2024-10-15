@@ -46,6 +46,7 @@ const SuccessPage = () => {
         });
           const data = await res.json();
           savePayment(data.user)
+          updateUser(data.user)
         } catch (error) {
           console.error('Error:', error);
        
@@ -94,7 +95,7 @@ const SuccessPage = () => {
                 throw new Error('Failed to save payment');
             }
             await response.json(); // Optionally handle response if needed
-            updateUser(data.user)
+           
         } catch (error) {
             console.error('Payment saving error:', error);
         }
