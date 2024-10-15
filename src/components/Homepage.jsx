@@ -171,7 +171,7 @@ export default function Homepage() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (!data || loginStatus === false) {
+      if (!data) {
         // Use encodeURIComponent to ensure the URL is valid
         const carString = `${encodeURIComponent(car_make)}&${encodeURIComponent(car_model)}&${encodeURIComponent(car_year)}&${encodeURIComponent(engine_type)}&${encodeURIComponent(fault_code)}`;
         navigate(`/${carString}`);

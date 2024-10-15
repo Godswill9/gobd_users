@@ -165,11 +165,11 @@ var token= Cookies.get("jwt_user")
       const data = await res.json();
 
       const timeoutId = setTimeout(() => {
-        if (!data || loginStatus===false) {
+        if (!data || data.message=="login first") {
       const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
           navigate(`/${carString}`);
      } else {
-          navigate(`/${data.username}/paid`);
+          navigate(`/${data.user.username}/paid`);
         }
       }, 100);
 

@@ -189,11 +189,11 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
       const data = await res.json();
 
       const timeoutId = setTimeout(() => {
-        if (!data || loginStatus===false) {
-      const carString = `${encodeURIComponent(make)}&${encodeURIComponent(model)}&${encodeURIComponent(year)}&${encodeURIComponent(type)}&${encodeURIComponent(fault_code)}`;
+        if (!data || data.message=="login first") {
+      const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
           navigate(`/${carString}`);
      } else {
-          navigate(`/${data.username}/paid`);
+          navigate(`/${data.user.username}/paid`);
         }
       }, 100);
 
