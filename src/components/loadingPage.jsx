@@ -52,7 +52,7 @@ function LoadingPage() {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email:email, password: userPass }),
+                body: JSON.stringify({ email:Cookies.get("email"), password:Cookies.get("password")}),
                 credentials: "include",
             });
 
