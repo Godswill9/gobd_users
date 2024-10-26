@@ -32,7 +32,8 @@ function LoadingPage() {
 
             if (responseData.status === 'payment success') {
                 await Promise.all([loginUser()]);
-                window.location.href = "/success"; 
+                // window.location.href = "/success"; 
+                navigate('/success');
             } else {
                 console.error(responseData);
                 navigate('/error');
