@@ -35,29 +35,44 @@ const SuccessPage = () => {
     //     handleAsyncOperations();
     // }, [data]);
 
-    const checkUser = async (token) => {
-        try {
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
-            method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ jwt_user:token}),
-        });
-          const data = await res.json();
-          savePayment(data.user)
-          updateUser(data.user)
-        } catch (error) {
-          console.error('Error:', error);
+    // const checkUser = async (token) => {
+    //     try {
+    //       const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
+    //         method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({ jwt_user:token}),
+    //     });
+    //       const data = await res.json();
+    //       savePayment(data.user)
+    //       updateUser(data.user)
+    //     } catch (error) {
+    //       console.error('Error:', error);
        
-        }
-      };
-
-    useEffect(() => {
-      checkUser(token)  
-    }, []);
+    //     }
+    //   };
     
 
+    const getUser = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/getUser/${Cookies.get("email")}`, {
+                method: 'PUT',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                });
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+           const data= await response.json(); // Optionally handle response if needed
+           updateUser(data)
+           savePayment(data)
+          } catch (error) {
+            console.error('User update error:', error);
+        }
+    };
     const updateUser = async (data) => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/updateUser/${data.email}`, {
@@ -72,10 +87,7 @@ const SuccessPage = () => {
             if (!response.ok) {
                 throw new Error('Failed to update user');
             }
-            await response.json(); // Optionally handle response if needed
-
-            window.location.href = `/${Cookies.get("email")}/paid`; 
-        } catch (error) {
+           } catch (error) {
             console.error('User update error:', error);
         }
     };
@@ -94,12 +106,15 @@ const SuccessPage = () => {
             if (!response.ok) {
                 throw new Error('Failed to save payment');
             }
-            await response.json(); // Optionally handle response if needed
-           
+            window.location.href = `/${Cookies.get("email")}/paid`; 
         } catch (error) {
             console.error('Payment saving error:', error);
         }
     };
+
+    useEffect(() => {
+        getUser() 
+      }, []);
 
     // Show loading state while waiting for operations to complete
     if (loading) {
