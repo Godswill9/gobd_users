@@ -39,11 +39,18 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
     localStorage.setItem("password", data.password)
 
     const additionalData = {
-      car_make:localStorage.getItem("car_make"),
-      car_model:localStorage.getItem("car_model"),
-      car_year:localStorage.getItem("car_year"),
-      engine_type:localStorage.getItem("engine_type"),
+      car_make:Cookies.get('car_make'),
+      car_model:Cookies.get('car_model'), 
+      car_year:Cookies.get('car_year'), 
+      engine_type:Cookies.get('engine_type'), 
     };
+
+    // const additionalData = {
+    //   car_make:localStorage.getItem("car_make"),
+    //   car_model:localStorage.getItem("car_model"),
+    //   car_year:localStorage.getItem("car_year"),
+    //   engine_type:localStorage.getItem("engine_type"),
+    // };
 
     const combinedData = {
       ...data,
