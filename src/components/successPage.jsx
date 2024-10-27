@@ -131,7 +131,7 @@ const SuccessPage = () => {
 
             if (res.status === "success") {
                 Cookies.set('email', res.email, { expires: 30 })
-                // Cookies.set('jwt_user', res.accessToken, { expires: 30 });
+                Cookies.set('jwt_user', res.accessToken, { expires: 30 });
                 window.location.href = `/${Cookies.get("email")}/paid`; 
             } else {
                 handleError(res.message || 'Login failed. Please try again.');
