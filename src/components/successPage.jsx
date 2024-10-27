@@ -69,6 +69,7 @@ const SuccessPage = () => {
            const data= await response.json(); // Optionally handle response if needed
            updateUser(data)
            savePayment(data)
+           loginUser()
           } catch (error) {
             console.error('User update error:', error);
         }
@@ -106,9 +107,37 @@ const SuccessPage = () => {
             if (!response.ok) {
                 throw new Error('Failed to save payment');
             }
-            window.location.href = `/${Cookies.get("email")}/paid`; 
+            // window.location.href = `/${Cookies.get("email")}/paid`; 
         } catch (error) {
             console.error('Payment saving error:', error);
+        }
+    };
+
+    
+    const loginUser = async () => {
+        var email= Cookies.get("email")
+        var userPass= Cookies.get("userPass")
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email:Cookies.get("email"), password:Cookies.get("password")}),
+                credentials: "include",
+            });
+
+            const res = await response.json();
+
+            if (res.status === "success") {
+                Cookies.set('email', res.email, { expires: 30 })
+                // Cookies.set('jwt_user', res.accessToken, { expires: 30 });
+                window.location.href = `/${Cookies.get("email")}/paid`; 
+            } else {
+                handleError(res.message || 'Login failed. Please try again.');
+            }
+        } catch (error) {
+            handleError('Error during login!');
         }
     };
 

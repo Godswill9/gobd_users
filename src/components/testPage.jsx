@@ -24,7 +24,7 @@ function TestPage() {
   // const fault_code = localStorage.getItem('fault_code');
 
 // var val= Cookies.get("jwt_test")
-var token= Cookies.get("jwt_user")
+// var token= Cookies.get("jwt_user")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -177,23 +177,22 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
   }, []);
 
   
-  const checkUser = async (token) => {
+  const checkUser = async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
-        method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ jwt_user:token}),
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
     });
       const data = await res.json();
-
       const timeoutId = setTimeout(() => {
         if (!data || data.message=="login first") {
       const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
           navigate(`/${carString}`);
      } else {
-          navigate(`/${data.user.username}/paid`);
+          navigate(`/${data.username}/paid`);
         }
       }, 100);
 
@@ -206,7 +205,7 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
   };
 
 useEffect(() => {
-  checkUser(token)  
+  checkUser()  
 }, []);
 
 

@@ -85,8 +85,21 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
         handleVerifyUser()
            // Proceed to payment
         payHandler(data.email); 
-      }else if(res.message === "user already exists"){
+      }else if(res.message === "user already exists" && res.result[0].subscription_status === "in-active"){
         payHandler(data.email); 
+        console.log(res)
+        return;
+      } else if(res.message === "user already exists" && res.result[0].subscription_status === "active"){
+        toast.success('You are still an active user, redirecting to login...!', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+        });
+        window.location.href = "/login" 
       } 
       else {
         toast.error(res.message || 'Signup failed. Please try again.', {

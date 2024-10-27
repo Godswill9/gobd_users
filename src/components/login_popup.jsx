@@ -47,7 +47,7 @@ const Login = ({ loginDisplay, setloginDisplayHandler, setSignupDisplay, setveri
         });
 
         // Save the response data to cookies
-        Cookies.set('jwt_user', res.accessToken, { expires: 7 }); // Set cookie to expire in 7 days
+        // Cookies.set('jwt_user', res.accessToken, { expires: 7 }); // Set cookie to expire in 7 days
 
         // Redirect to the user's page
         setTimeout(() => {

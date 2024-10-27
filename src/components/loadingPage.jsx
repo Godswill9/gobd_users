@@ -14,6 +14,7 @@ function LoadingPage() {
         var ref= Cookies.get("ref")
         if (ref) {
             confirmPayment(ref);
+            // loginUser()
         } else {
             navigate('/error');
         }
@@ -31,9 +32,8 @@ function LoadingPage() {
             const responseData = await response.json();
 
             if (responseData.status === 'payment success') {
-                await Promise.all([loginUser()]);
-                // window.location.href = "/success"; 
-                navigate('/success');
+                // await Promise.all([loginUser()]);
+                window.location.href = "/success"; 
             } else {
                 console.error(responseData);
                 navigate('/error');
@@ -44,31 +44,6 @@ function LoadingPage() {
         }
     };
 
-    const loginUser = async () => {
-        var email= Cookies.get("email")
-        var userPass= Cookies.get("userPass")
-        try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email:Cookies.get("email"), password:Cookies.get("password")}),
-                credentials: "include",
-            });
-
-            const res = await response.json();
-
-            if (res.status === "success") {
-                Cookies.set('email', res.email, { expires: 30 })
-                Cookies.set('jwt_user', res.accessToken, { expires: 30 });
-            } else {
-                handleError(res.message || 'Login failed. Please try again.');
-            }
-        } catch (error) {
-            handleError('Error during login!');
-        }
-    };
 
     const handleError = (message) => {
         console.error(message);
