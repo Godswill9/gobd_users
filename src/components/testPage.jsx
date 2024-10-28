@@ -43,7 +43,7 @@ var token= Cookies.get("jwt_user")
     navigate('/checkout')
   };
 
-  Cookies.set('car_make', carDetails.make, { expires: 30 }); // Set cookie to expire in 30 days
+  Cookies.set('car_make', carDetails.carMake, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('car_model', carDetails.carBrand, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('car_year', carDetails.carYear, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set cookie to expire in 30 days
