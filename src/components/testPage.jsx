@@ -24,7 +24,7 @@ function TestPage() {
   // const fault_code = localStorage.getItem('fault_code');
 
 // var val= Cookies.get("jwt_test")
-// var token= Cookies.get("jwt_user")
+var token= Cookies.get("jwt_user")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
@@ -177,14 +177,15 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
   }, []);
 
   
-  const checkUser = async () => {
+  const checkUser = async (token) => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
+        body: JSON.stringify({ jwt_user:token}),
     });
       const data = await res.json();
       const timeoutId = setTimeout(() => {
@@ -205,7 +206,7 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
   };
 
 useEffect(() => {
-  checkUser()  
+  checkUser(token)  
 }, []);
 
 

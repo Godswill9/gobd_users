@@ -153,15 +153,15 @@ var token= Cookies.get("jwt_user")
     }
   }, []);
 
-  const checkUser = async () => {
+  const checkUser = async (token) => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
-        method: 'GET',
+        method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      // body: JSON.stringify({ jwt_user:token}),
+      body: JSON.stringify({ jwt_user:token}),
     });
       const data = await res.json();
 
@@ -183,7 +183,7 @@ var token= Cookies.get("jwt_user")
   };
 
 useEffect(() => {
-  checkUser()  
+  checkUser(token)  
 }, []);
 
   useEffect(() => {
