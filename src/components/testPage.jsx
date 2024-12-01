@@ -50,8 +50,6 @@ Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set co
 Cookies.set('fault_code', processAndTrim(carDetails.faultCode), { expires: 30 }); // Set cookie to expire in 30 days
 
 
-console.log(processAndTrim(carDetails.faultCode))
-
   const displayOnScreen = (elem, role, options = []) => {
     setMessages((prevMessages) => [
       ...prevMessages,
