@@ -47,8 +47,10 @@ var token= Cookies.get("jwt_user")
 Cookies.set('car_model', carDetails.carBrand, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('car_year', carDetails.carYear, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set cookie to expire in 30 days
-Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('fault_code', processAndTrim(carDetails.faultCode), { expires: 30 }); // Set cookie to expire in 30 days
 
+
+console.log(processAndTrim(carDetails.faultCode))
 
   const displayOnScreen = (elem, role, options = []) => {
     setMessages((prevMessages) => [
@@ -133,8 +135,8 @@ Cookies.set('fault_code', carDetails.faultCode, { expires: 30 }); // Set cookie 
     // }else{
 
     // }
-    const message = `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with fault code ${carDetails.faultCode}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 70 words `;
-   try {
+    const message = generateMechanicPrompt(carDetails);
+    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -301,4 +303,33 @@ function formatStringAndWrapDivs(inputString) {
   });
 
   return modifiedText;
+}
+
+function processAndTrim(input) {
+  // Split the input string into an array
+  const inputArray = input.split(", ").map((item) => item.trim());
+
+  // Helper function to trim a single value to 5 characters
+  const trimString = (value) => (value.length > 5 ? value.slice(0, 5) : value);
+
+  // Process each item in the array
+  const trimmedArray = inputArray.map(trimString);
+
+  // Return the trimmed array as a string (comma-separated)
+  return trimmedArray.join(", ");
+}
+
+
+function generateMechanicPrompt(carDetails) {
+    // Ensure fault codes are properly trimmed and formatted
+    const trimmedFaultCodes = processAndTrim(carDetails.faultCode);
+    const faultCodeList = trimmedFaultCodes.split(", ");
+
+    // Generate a dynamic part of the message based on the number of codes
+    const faultCodeMessage = faultCodeList.length === 1
+        ? `fault code ${faultCodeList[0]}`
+        : `fault codes: ${faultCodeList.join(", ")}`;
+
+    // Craft the full message
+    return `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with ${faultCodeMessage}, provide details on each code including its **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience, with a maximum of 170 words.`;
 }

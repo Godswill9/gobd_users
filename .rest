@@ -1,0 +1,12 @@
+POST https://aimechanic.asoroautomotive.com/api/login
+Content-Type: application/json
+
+{
+    "username": "testuser",
+    "email": "",
+    "password": "testpassword",
+    "phoneNumber": 1234567890,
+    "subscription_status": "in-active",
+    "car_make": "Toyota",
+    "car_model": "Corolla"
+}
