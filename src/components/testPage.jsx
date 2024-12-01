@@ -47,7 +47,7 @@ var token= Cookies.get("jwt_user")
 Cookies.set('car_model', carDetails.carBrand, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('car_year', carDetails.carYear, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set cookie to expire in 30 days
-Cookies.set('fault_code', processAndTrim(carDetails.faultCode), { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 }); // Set cookie to expire in 30 days
 
 
   const displayOnScreen = (elem, role, options = []) => {
@@ -303,24 +303,22 @@ function formatStringAndWrapDivs(inputString) {
   return modifiedText;
 }
 
-function processAndTrim(input) {
-  // Split the input string into an array
-  const inputArray = input.split(", ").map((item) => item.trim());
+function cleanFaultCodes(input) {
+  // Regular expression to match the pattern: "P[0-9A-Z]{4}" or "U[0-9]{4}"
+  const regex = /P[0-9A-Z]{4}|U[0-9]{4}/g;
 
-  // Helper function to trim a single value to 5 characters
-  const trimString = (value) => (value.length > 5 ? value.slice(0, 5) : value);
+  // Use the `match` method to extract all matching substrings
+  const matches = input.match(regex);
 
-  // Process each item in the array
-  const trimmedArray = inputArray.map(trimString);
+  // Join the matches with commas and spaces
+  const result = matches.join(', ');
 
-  // Return the trimmed array as a string (comma-separated)
-  return trimmedArray.join(", ");
+  return result;
 }
-
 
 function generateMechanicPrompt(carDetails) {
     // Ensure fault codes are properly trimmed and formatted
-    const trimmedFaultCodes = processAndTrim(carDetails.faultCode);
+    const trimmedFaultCodes = cleanFaultCodes(carDetails.faultCode);
     const faultCodeList = trimmedFaultCodes.split(", ");
 
     // Generate a dynamic part of the message based on the number of codes
