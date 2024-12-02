@@ -338,7 +338,7 @@ function generateMechanicPrompt(carDetails) {
 
     // Craft the full message
     // return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, provide details on each fault code, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience.`;
-    return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, explain each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Explain for all in one chat. Keep your explanations concise and informative to a wide audience.`;
+    return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, explain each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Explain for all in one chat. Keep your explanations concise and informative to a wide audience. Don't start with an intro or outro. Just go straight to the point for the diagnosis.`;
 }
 
 
