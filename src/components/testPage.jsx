@@ -94,7 +94,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
         setRequestCount((count) => count + 1);
         if (data.data=="EXHAUSTED" ) {
           displayOnScreen(
-            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+            formatText( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
             'receiver'
           )
           setTimeout(()=>{
@@ -105,7 +105,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
           },3000)
         }
         else{
-          displayOnScreen(formatStringAndWrapDivs(data.data), 'receiver');
+          displayOnScreen(formatText(data.data), 'receiver');
           setTimeout(()=>{
             displayOnScreen(
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
@@ -346,7 +346,7 @@ function formatText(inputText) {
   // Regular expression to match fault codes (e.g., **P0101**) and labels (e.g., **Symptoms:**)
   const patterns = [
     // Match fault codes like **P0101**
-    { regex: /\*\*([A-Za-z0-9]+)\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block; margin-top:10px;' },
+    { regex: /\*\*([A-Za-z0-9]+)\*\*/g, style: 'font-weight: bold; display: block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;' },
     // Match labels like **Symptoms:**
     { regex: /\*\*(Symptoms|Meaning|Potential Causes|Possible Solutions):\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block;' }
   ];
