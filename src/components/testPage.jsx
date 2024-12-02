@@ -148,7 +148,9 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
 
       if (dataAi.data) {
         setRequestCount((count) => count + 1);
-          displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
+          // displayOnScreen(dataAi.data, 'receiver');
+          displayOnScreen(formatText(dataAi.data), 'receiver');
+          // displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
           setTimeout(()=>{
             displayOnScreen(
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
@@ -260,12 +262,13 @@ useEffect(() => {
 export default TestPage;
 
 
+
 function formatStringAndWrapDivs(inputString) {
   const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
   const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
 
   const urls = [];
-  let urlMap = {};
+  const urlMap = {};
 
   // Replace URLs with placeholders
   let placeholderText = inputString.replace(urlPattern, (url, offset) => {
@@ -285,15 +288,21 @@ function formatStringAndWrapDivs(inputString) {
   // Split the text into sentences
   const sentences = placeholderText.split('.');
 
-  let modifiedText = "";
-  sentences.forEach((sentence) => {
-      const trimmedSentence = sentence.trim();
-      if (trimmedSentence) {
-          // Make the bold formatting changes
-          const formattedSentence = trimmedSentence.replace(/\*\*(.*?)\*\*/, '<div style="display: block; text-decoration: underline;"><b>$1</b></div>');
-          modifiedText += `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`;
-      }
-  });
+  let modifiedText = sentences
+      .map((sentence) => {
+          const trimmedSentence = sentence.trim();
+          if (trimmedSentence) {
+              // Apply bold formatting with div styling
+              return trimmedSentence.replace(
+                  /\*\*(.*?)\*\*/,
+                  '<div style="display: block; text-decoration: underline;"><b>$1</b></div>'
+              );
+          }
+          return '';
+      })
+      .filter((formattedSentence) => formattedSentence.length > 0)
+      .map((formattedSentence) => `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`)
+      .join('');
 
   // Replace URL placeholders with the original URLs
   modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
@@ -302,6 +311,7 @@ function formatStringAndWrapDivs(inputString) {
 
   return modifiedText;
 }
+
 
 function cleanFaultCodes(input) {
   // Regular expression to match the pattern: "P[0-9A-Z]{4}" or "U[0-9]{4}"
@@ -327,5 +337,29 @@ function generateMechanicPrompt(carDetails) {
         : `fault codes: ${faultCodeList.join(", ")}`;
 
     // Craft the full message
-    return `As a mechanic, for the ${carDetails.carYear} ${carDetails.carMake} ${carDetails.carBrand} with ${faultCodeMessage}, provide details on each code including its **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience, with a maximum of 170 words.`;
+    // return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, provide details on each fault code, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience.`;
+    return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, explain each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Explain for all in one chat. Keep your explanations concise and informative to a wide audience.`;
+}
+
+
+function formatText(inputText) {
+  // Regular expression to match fault codes (e.g., **P0101**) and labels (e.g., **Symptoms:**)
+  const patterns = [
+    // Match fault codes like **P0101**
+    { regex: /\*\*([A-Za-z0-9]+)\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block; margin-top:10px;' },
+    // Match labels like **Symptoms:**
+    { regex: /\*\*(Symptoms|Meaning|Potential Causes|Possible Solutions):\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block;' }
+  ];
+
+  let formattedText = inputText;
+
+  // Loop through patterns to apply styles
+  patterns.forEach(pattern => {
+    formattedText = formattedText.replace(pattern.regex, (match, group1) => {
+      // Remove the ** markers and wrap with <span> for styling
+      return `<span style="${pattern.style}">${group1}</span>`;
+    });
+  });
+
+  return formattedText;
 }
