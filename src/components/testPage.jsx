@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 function TestPage() {
   const { car } = useParams();
   const [messages, setMessages] = useState([]);
+  const [conversation , setConversation ] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
@@ -80,13 +81,14 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
 
   const replyMessage = async (message) => {
     setLoading(true);
+    setConversation(prevConversation => [...prevConversation, message]);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message:message, requestCount:requestCount, aiType:"FREE" }),
+      body: JSON.stringify({ message:message, requestCount:requestCount, aiType:"FREE", conversation:conversation }),
     });
       const data = await res.json();
 
@@ -94,7 +96,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
         setRequestCount((count) => count + 1);
         if (data.data=="EXHAUSTED" ) {
           displayOnScreen(
-            formatText( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
             'receiver'
           )
           setTimeout(()=>{
@@ -105,7 +107,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
           },3000)
         }
         else{
-          displayOnScreen(formatText(data.data), 'receiver');
+          displayOnScreen(formatStringAndWrapDivs(data.data), 'receiver');
           setTimeout(()=>{
             displayOnScreen(
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
@@ -134,6 +136,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
 
     // }
     const message = generateMechanicPrompt(carDetails);
+    setConversation(prevConversation => [...prevConversation, message]);
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
@@ -141,7 +144,8 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
         body: JSON.stringify({
           message,
           requestCount,
-          aiType:"FREE"
+          aiType:"FREE",
+          conversation:conversation 
         }),
       });
       const dataAi = await res.json();
@@ -149,7 +153,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
       if (dataAi.data) {
         setRequestCount((count) => count + 1);
           // displayOnScreen(dataAi.data, 'receiver');
-          displayOnScreen(formatText(dataAi.data), 'receiver');
+          displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
           // displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
           setTimeout(()=>{
             displayOnScreen(
@@ -263,10 +267,61 @@ export default TestPage;
 
 
 
+// function formatStringAndWrapDivs(inputString) {
+//   const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
+//   const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
+
+//   const urls = [];
+//   const urlMap = {};
+
+//   // Replace URLs with placeholders
+//   let placeholderText = inputString.replace(urlPattern, (url, offset) => {
+//       const beforeText = inputString.slice(0, offset);
+//       const afterText = inputString.slice(offset + url.length);
+//       const isEmail = emailPattern.test(beforeText) || emailPattern.test(afterText);
+
+//       if (!isEmail) {
+//           const placeholder = `__URL_PLACEHOLDER_${urls.length}__`;
+//           urls.push(url);
+//           urlMap[placeholder] = url;
+//           return placeholder;
+//       }
+//       return url;
+//   });
+
+//   // Split the text into sentences
+//   const sentences = placeholderText.split('.');
+
+//   let modifiedText = sentences
+//       .map((sentence) => {
+//           const trimmedSentence = sentence.trim();
+//           if (trimmedSentence) {
+//               // Apply bold formatting with div styling
+//               return trimmedSentence.replace(
+//                   /\*\*(.*?)\*\*/,
+//                   '<div style="display: block; text-decoration: underline;"><b>$1</b></div>'
+//               );
+//           }
+//           return '';
+//       })
+//       .filter((formattedSentence) => formattedSentence.length > 0)
+//       .map((formattedSentence) => `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`)
+//       .join('');
+
+//   // Replace URL placeholders with the original URLs
+//   modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
+//       return urlMap[placeholder] || placeholder;
+//   });
+
+//   return modifiedText;
+// }
+
 function formatStringAndWrapDivs(inputString) {
+  // Define patterns for URLs, emails, and fault codes
   const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
   const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
-
+  // const faultCodePattern = /\b[A-Za-z]\d{4}:\b/g; // Pattern to match strings like A1234: or b9876:
+  const faultCodePattern = /\b\w+:\b/g;
   const urls = [];
   const urlMap = {};
 
@@ -285,6 +340,11 @@ function formatStringAndWrapDivs(inputString) {
       return url;
   });
 
+  // Replace fault codes with styled and bold spans
+  placeholderText = placeholderText.replace(faultCodePattern, (match) => {
+      return `<div style="font-weight: bold; display: block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;"><b>${match}</b></div>`;
+  });
+
   // Split the text into sentences
   const sentences = placeholderText.split('.');
 
@@ -292,10 +352,10 @@ function formatStringAndWrapDivs(inputString) {
       .map((sentence) => {
           const trimmedSentence = sentence.trim();
           if (trimmedSentence) {
-              // Apply bold formatting with div styling
+              // Apply bold formatting with div styling for **bold text**
               return trimmedSentence.replace(
-                  /\*\*(.*?)\*\*/,
-                  '<div style="display: block; text-decoration: underline;"><b>$1</b></div>'
+                /\*\*(.*?)\*\*/,
+                  '<div style="font-weight: bold; margin-top:10px; margin-bottom: 5px; background-color: black; color: orange; padding: 5px; border-radius: 5px;"><b>$1</b></div>'
               );
           }
           return '';
@@ -311,7 +371,6 @@ function formatStringAndWrapDivs(inputString) {
 
   return modifiedText;
 }
-
 
 function cleanFaultCodes(input) {
   // Regular expression to match the pattern: "P[0-9A-Z]{4}" or "U[0-9]{4}"
@@ -338,28 +397,40 @@ function generateMechanicPrompt(carDetails) {
 
     // Craft the full message
     // return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, provide details on each fault code, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience.`;
-    return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, explain each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Explain for all in one chat. Keep your explanations concise and informative to a wide audience. Don't start with an intro or outro. Just go straight to the point for the diagnosis.`;
+    return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}. Give a short, one liner explanation for each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions, using this format (e.g Symptoms: Poor gas mileage and lack of power.). Use this format (**P0236**) to separate each faultcodes. Explain for all in one chat. Keep your explanations concise and informative to a wide audience. Don't start with an intro or outro. Just go straight to the point for the diagnosis.`;
 }
 
 
+// function formatText(inputText) {
+//   // Regular expression to match fault codes (e.g., **P0101**) and labels (e.g., **Symptoms:**)
+//   const patterns = [
+//     // Match fault codes like **P0101**
+//     { regex: /\*\*([A-Za-z0-9]+)\*\*/g, style: 'font-weight: bold; display: block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;' },
+//     // Match labels like **Symptoms:**
+//     { regex: /\*\*(Symptoms|Meaning|Potential Causes|Possible Solutions):\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block;' }
+//   ];
+
+//   let formattedText = inputText;
+
+//   // Loop through patterns to apply styles
+//   patterns.forEach(pattern => {
+//     formattedText = formattedText.replace(pattern.regex, (match, group1) => {
+//       // Remove the ** markers and wrap with <span> for styling
+//       return `<span style="${pattern.style}">${group1}</span>`;
+//     });
+//   });
+
+//   return formattedText;
+// }
+
 function formatText(inputText) {
-  // Regular expression to match fault codes (e.g., **P0101**) and labels (e.g., **Symptoms:**)
-  const patterns = [
-    // Match fault codes like **P0101**
-    { regex: /\*\*([A-Za-z0-9]+)\*\*/g, style: 'font-weight: bold; display: block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;' },
-    // Match labels like **Symptoms:**
-    { regex: /\*\*(Symptoms|Meaning|Potential Causes|Possible Solutions):\*\*/g, style: 'font-weight: bold; text-decoration: underline; display: block;' }
-  ];
-
-  let formattedText = inputText;
-
-  // Loop through patterns to apply styles
-  patterns.forEach(pattern => {
-    formattedText = formattedText.replace(pattern.regex, (match, group1) => {
-      // Remove the ** markers and wrap with <span> for styling
-      return `<span style="${pattern.style}">${group1}</span>`;
-    });
-  });
-
-  return formattedText;
+   // Define the regex pattern for fault codes like P0101, P0116, etc.
+   const faultCodePattern = /\b[A-Za-z]\d{4}:\b/g; 
+   
+   // Replace the fault codes with styled versions
+   const styledText = inputText.replace(faultCodePattern, (match) => {
+     return `<div style="font-weight: bold; display: inline-block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;">${match}</div>`;
+   });
+ 
+   return styledText;
 }
