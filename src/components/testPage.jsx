@@ -104,7 +104,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
               "others"
             );
-          },3000)
+          },1000)
         }
         else{
           displayOnScreen(formatStringAndWrapDivs(data.data), 'receiver');
@@ -113,7 +113,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
               "others"
             );
-          },3000)
+          },1000)
         }
       }
     } catch (error) {
@@ -155,7 +155,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
               `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
               "others"
             );
-          },3000)
+          },1000)
       }
     } catch (error) {
       console.error('Error:', error);
@@ -169,6 +169,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
   };
   const errFirstMessage = async () => {
     setLoading(true);
+    setRequestCount((count) => count + 1);
     try {
       displayOnScreen(
         formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe.`),
@@ -179,7 +180,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
           `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
           "others"
         );
-      },1500)
+      },1000)
     } catch (error) {
       console.error('Error:', error);
       displayOnScreen(
@@ -308,6 +309,7 @@ useEffect(() => {
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
+          style={{color:"black"}}
         />
         <button ref={sendButtonRef} onClick={handleSendMessage} disabled={!inputMessage.trim()}>
           Send
