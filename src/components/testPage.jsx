@@ -69,6 +69,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
   const payHandler = (email) => {
     // Cookies.set('email', data.email, { expires: 2});
     // Cookies.set('password', data.password, { expires: 2});
+    setDisplay("flex")
     fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
       method: "POST",
       credentials: "include",
@@ -80,7 +81,6 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
       .then((res) => res.json())
       .then((res) => {
         // console.log(res);
-        setDisplay("none")
         if (res.data && res.data.authorization_url) {
           // Redirect using navigate
           window.location.href = res.data.authorization_url; 
@@ -94,6 +94,16 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
       .catch((error) => {
         console.error("Error:", error);
         setDisplay("none")
+        toast.error("Error", {
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: "light",
+      });
+      navigate('/error');
       });
   };
 
@@ -113,6 +123,16 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     } catch (error) {
       console.error('Error:', error);
       setDisplay("none")
+      toast.error("Error", {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+    });
+    navigate('/error');
    
     }
   };
