@@ -37,6 +37,7 @@ var token= Cookies.get("jwt_user")
       carYear: paramsArray[2] || '',
       carEngineType: paramsArray[3] || '',
       faultCode: paramsArray[4] || '',
+      userToken: paramsArray[5] || '',
     };
   };
   const carDetails = parseCarParams(car);
@@ -239,7 +240,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ jwt_user:token}),
+        body: JSON.stringify({ jwt_user:carDetails.userToken}),
     });
       const data = await res.json();
       const timeoutId = setTimeout(() => {
