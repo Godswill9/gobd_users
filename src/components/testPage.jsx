@@ -4,12 +4,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import HeaderUnpaid from "./header_unpaid";
 import AnimatedMessage from "./AnimatedMessage";
 import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
 function TestPage() {
   const { car } = useParams();
   const [messages, setMessages] = useState([]);
   const [conversation , setConversation ] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
+  const [display, setDisplay] = useState('none');
   const [loading, setLoading] = useState(false);
   const [requestCount, setRequestCount] = useState(0);
   const innerContRef = useRef(null);
@@ -42,7 +44,8 @@ function TestPage() {
   const carDetails = parseCarParams(car);
 
   const handleSubscribe = () => {
-    navigate('/checkout')
+    // navigate('/checkout')
+    checkUserForPayment(token)
   };
 
   Cookies.set('car_make', carDetails.carMake, { expires: 30 }); // Set cookie to expire in 30 days
@@ -60,6 +63,57 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     ]);
     if (innerContRef.current) {
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
+    }
+  };
+
+  const payHandler = (email) => {
+    // Cookies.set('email', data.email, { expires: 2});
+    // Cookies.set('password', data.password, { expires: 2});
+    fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email}),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        // console.log(res);
+        setDisplay("none")
+        if (res.data && res.data.authorization_url) {
+          // Redirect using navigate
+          window.location.href = res.data.authorization_url; 
+          // localStorage.setItem("ref", res.data.reference);
+          Cookies.set('ref', res.data.reference, { expires: 2});
+        } else {
+          console.error("Authorization URL not found in the response.");
+          alert('Error: Authorization URL not found');
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        setDisplay("none")
+      });
+  };
+
+  const checkUserForPayment = async (token) => {
+    setDisplay("flex")
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/verifyMeWithData`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ jwt_user:token}),
+    });
+      const data = await res.json();
+      payHandler(data.email); 
+    } catch (error) {
+      console.error('Error:', error);
+      setDisplay("none")
+   
     }
   };
 
@@ -320,11 +374,15 @@ useEffect(() => {
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          style={{color:"black"}}
+          style={{color:"white", background:"black"}}
         />
         <button ref={sendButtonRef} onClick={handleSendMessage} disabled={!inputMessage.trim()}>
           Send
         </button>
+      </div>
+    <div className="loading-page" style={{display:display,width:"100%", height:"100%", position:"absolute",zIndex:"3",top:"0%",left:"0%",background:"rgba(0, 0, 0, 0.75)"}}>
+            <div className="loader"></div>
+            <p>Loading, please wait...</p>
       </div>
     </div>
   );

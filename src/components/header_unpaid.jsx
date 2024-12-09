@@ -34,7 +34,7 @@ const HeaderUnpaid = ({ login, onSubscribe }) => {
     <header className="plain-header">
       <h2>Subscribe for full experience!👌👍</h2>
       <button onClick={onSubscribe} className="subscribe-button">Subscribe</button>
-      <button onClick={login} className="subscribe-button">login</button>
+      {/* <button onClick={login} className="subscribe-button">login</button> */}
     </header>
   );
 };

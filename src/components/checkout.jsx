@@ -171,9 +171,9 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
     }
   };
 
-  const payHandler = () => {
-    Cookies.set('email', data.email, { expires: 2});
-    Cookies.set('password', data.password, { expires: 2});
+  const payHandler = (email) => {
+    // Cookies.set('email', data.email, { expires: 2});
+    // Cookies.set('password', data.password, { expires: 2});
     fetch(`${import.meta.env.VITE_API_URL}/acceptPayment`, {
       method: "POST",
       credentials: "include",
@@ -212,12 +212,14 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
           name='username'
           value={data.username}
           onChange={handleChange}
+          style={{color:"white", background:"black"}}
         />
         <input
           type="email"
           placeholder="Enter a valid email address"
           required
           name='email'
+          style={{color:"white", background:"black"}}
           value={data.email}
           onChange={handleChange}
         />
@@ -227,6 +229,7 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
           required
           name='password'
           value={data.password}
+          style={{color:"white", background:"black"}}
           onChange={handleChange}
         />
         <input
@@ -235,6 +238,7 @@ const Checkout = ({ SignupDisplay, setloginDisplayHandler, setverificationDispla
           required
           name='phoneNumber'
           value={data.phoneNumber}
+          style={{color:"white", background:"black"}}
           onChange={handleChange}
         />
         <button type="submit" className="btn">Proceed to paystack</button>
