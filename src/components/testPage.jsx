@@ -247,9 +247,9 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
       const data = await res.json();
       const timeoutId = setTimeout(() => {
         if (!data || data.message=="login first") {
-      const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}&${encodeURIComponent(carDetails.userToken)}`;
-          navigate(`/${carString}`);
-          userChecker(data.email)
+      // const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
+          // navigate(`/${carString}`);
+          userChecker(token)
      } else {
           navigate(`/${data.username}/paid`);
         }
