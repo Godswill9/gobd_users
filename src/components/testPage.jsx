@@ -132,7 +132,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
   };
 
   
-  const firstMessage = async () => {
+  const firstMessage = async (email) => {
     setLoading(true);
     const message = generateMechanicPrompt(carDetails);
     setConversation(prevConversation => [...prevConversation, message]);
@@ -160,6 +160,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
               "others"
             );
           },1000)
+          diagnosesQueried(email, 1);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -176,7 +177,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     setRequestCount((count) => count + 1);
     try {
       displayOnScreen(
-        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. This is your email: ${email}`),
+        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe.`),
         'receiver'
       )
       setTimeout(()=>{
@@ -210,7 +211,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
         if(res.message !== "Continue" ){
           errFirstMessage(email);
         }else{
-          firstMessage();
+          firstMessage(email);
         }
       })
     } catch (error) {
@@ -233,6 +234,25 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
   //   }
   // }, []);
 
+  const diagnosesQueried  = async (email, request) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/diagnosesQueried`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ user_email:email, requests_made:request}),
+    });
+      const data = await res.json();
+      console.log(data)
+    } catch (error) {
+      console.error('Error:', error);
+   
+    }
+  };
+
+
   
   const checkUser = async (token) => {
     try {
@@ -246,10 +266,10 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     });
       const data = await res.json();
       const timeoutId = setTimeout(() => {
-        if (!data || data.message=="login first") {
-      // const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
-          // navigate(`/${carString}`);
-          userChecker(token)
+        if (!data || data.message=="login first" ||  data.subscription_status == "in-active") {
+      const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}&${encodeURIComponent(carDetails.userToken)}`;
+          navigate(`/${carString}`);
+          userChecker(data.email)
      } else {
           navigate(`/${data.username}/paid`);
         }
