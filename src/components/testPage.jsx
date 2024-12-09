@@ -174,7 +174,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
         setRequestCount((count) => count + 1);
         if (data.data=="EXHAUSTED" ) {
           displayOnScreen(
-            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
             'receiver'
           )
           setTimeout(()=>{
@@ -249,10 +249,10 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
   const errFirstMessage = async () => {
     // setLoading(true);
     setRequestCount((count) => count + 1);
-      displayOnScreen(
-        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe.`),
-        'receiver'
-      )
+    displayOnScreen(
+      formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+      'receiver'
+    )
       setTimeout(()=>{
         displayOnScreen(
           `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
