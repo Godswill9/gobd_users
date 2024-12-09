@@ -174,7 +174,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
         setRequestCount((count) => count + 1);
         if (data.data=="EXHAUSTED" ) {
           displayOnScreen(
-            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+            formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription.`),
             'receiver'
           )
           setTimeout(()=>{
@@ -250,7 +250,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     // setLoading(true);
     setRequestCount((count) => count + 1);
     displayOnScreen(
-      formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription. Existing user? Click <a href="/login" class="paymentLink">here</a> to log in.`),
+      formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, proceed to subscription.`),
       'receiver'
     )
       setTimeout(()=>{
