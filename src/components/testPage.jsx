@@ -167,12 +167,12 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
       setLoading(false);
     }
   };
-  const errFirstMessage = async () => {
+  const errFirstMessage = async (email) => {
     setLoading(true);
     setRequestCount((count) => count + 1);
     try {
       displayOnScreen(
-        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe.`),
+        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe. This is your email: ${email}`),
         'receiver'
       )
       setTimeout(()=>{
@@ -204,7 +204,7 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
       .then((res)=>{
         console.log(res)
         if(res.message !== "Continue" ){
-          errFirstMessage();
+          errFirstMessage(email);
         }else{
           firstMessage();
         }
@@ -241,7 +241,6 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
         body: JSON.stringify({ jwt_user:token}),
     });
       const data = await res.json();
-      alert(data.id)
       const timeoutId = setTimeout(() => {
         if (!data || data.message=="login first") {
       const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
