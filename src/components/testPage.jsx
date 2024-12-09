@@ -130,11 +130,6 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
   
   const firstMessage = async () => {
     setLoading(true);
-    // if(val2){
-    //   displayOnScreen(val2, 'others');
-    // }else{
-
-    // }
     const message = generateMechanicPrompt(carDetails);
     setConversation(prevConversation => [...prevConversation, message]);
     try {
@@ -172,15 +167,66 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
       setLoading(false);
     }
   };
+  const errFirstMessage = async () => {
+    setLoading(true);
+    try {
+      displayOnScreen(
+        formatStringAndWrapDivs( `You've reached the limit of your free trial. To get full access, click <a href="/checkout" class="paymentLink">here</a> to subscribe.`),
+        'receiver'
+      )
+      setTimeout(()=>{
+        displayOnScreen(
+          `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+          "others"
+        );
+      },1500)
+    } catch (error) {
+      console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const userChecker = async (email) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/checkDiagnosticsValidity`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_email:email
+        }),
+      }).then((res)=>res.json())
+      .then((res)=>{
+        console.log(res)
+        if(res.message !== "Continue" ){
+          errFirstMessage();
+        }else{
+          firstMessage();
+        }
+      })
+    } catch (error) {
+      console.error('Error:', error);
+      displayOnScreen(
+        `Ensure internet connection is on and reload`,
+        "errorMessage"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   
-  useEffect(() => {
-    if (!firstMessageCalled.current) {
-      firstMessage(); // Call firstMessage only if data is ready and not already called
-      firstMessageCalled.current = true; // Mark as called
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!firstMessageCalled.current) {
+  //     firstMessage(); // Call firstMessage only if data is ready and not already called
+  //     firstMessageCalled.current = true; // Mark as called
+  //   }
+  // }, []);
 
   
   const checkUser = async (token) => {
@@ -194,10 +240,12 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
         body: JSON.stringify({ jwt_user:token}),
     });
       const data = await res.json();
+      alert(data.id)
       const timeoutId = setTimeout(() => {
         if (!data || data.message=="login first") {
       const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
           navigate(`/${carString}`);
+          userChecker(data.email)
      } else {
           navigate(`/${data.username}/paid`);
         }
@@ -211,10 +259,16 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
     }
   };
 
-useEffect(() => {
-  checkUser(token)  
-}, []);
+// useEffect(() => {
+//   checkUser(token)  
+// }, []);
 
+useEffect(() => {
+    if (!firstMessageCalled.current) {
+      checkUser(token); // Call firstMessage only if data is ready and not already called
+      firstMessageCalled.current = true; // Mark as called
+    }
+  }, []);
 
 
   useEffect(()=>{
