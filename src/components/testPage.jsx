@@ -63,7 +63,7 @@ Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie t
     }
   };
 
-  var token= Cookies.get("jwt_user")
+  var token= carDetails.userToken;
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
