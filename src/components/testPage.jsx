@@ -25,7 +25,6 @@ function TestPage() {
   // const fault_code = localStorage.getItem('fault_code');
 
 // var val= Cookies.get("jwt_test")
-var token= Cookies.get("jwt_user")
 // var token= localStorage.getItem("jwt_user")
 
   // Split the car string to get individual parameters
@@ -51,6 +50,7 @@ Cookies.set('car_model', carDetails.carBrand, { expires: 30 }); // Set cookie to
 Cookies.set('car_year', carDetails.carYear, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('engine_type', carDetails.carEngineType, { expires: 30 }); // Set cookie to expire in 30 days
 Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 }); // Set cookie to expire in 30 days
+Cookies.set('jwt_user',  carDetails.userToken, { expires: 30 }); // Set cookie to expire in 30 days
 
 
   const displayOnScreen = (elem, role, options = []) => {
@@ -62,6 +62,8 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
     }
   };
+
+  var token= Cookies.get("jwt_user")
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -240,12 +242,12 @@ Cookies.set('fault_code',  cleanFaultCodes(carDetails.faultCode), { expires: 30 
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ jwt_user:carDetails.userToken}),
+        body: JSON.stringify({ jwt_user:token}),
     });
       const data = await res.json();
       const timeoutId = setTimeout(() => {
         if (!data || data.message=="login first") {
-      const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}`;
+      const carString = `${encodeURIComponent(carDetails.carMake)}&${encodeURIComponent(carDetails.carBrand)}&${encodeURIComponent(carDetails.carYear)}&${encodeURIComponent(carDetails.carEngineType)}&${encodeURIComponent(carDetails.faultCode)}&${encodeURIComponent(carDetails.userToken)}`;
           navigate(`/${carString}`);
           userChecker(data.email)
      } else {
