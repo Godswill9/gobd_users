@@ -25,8 +25,8 @@ function TestPage() {
   // const fault_code = localStorage.getItem('fault_code');
 
 // var val= Cookies.get("jwt_test")
-// var token= Cookies.get("jwt_user")
-var token= localStorage.getItem("jwt_user")
+var token= Cookies.get("jwt_user")
+// var token= localStorage.getItem("jwt_user")
 
   // Split the car string to get individual parameters
   const parseCarParams = (carString) => {
