@@ -15,6 +15,7 @@ export default function PaidPage() {
   const [requestCount, setRequestCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const innerContRef = useRef(null);
+  const [conversation , setConversation ] = useState([]);
   const navigate = useNavigate();
   const firstMessageCalled = useRef(false); // To track if the first message has been called
 
@@ -45,6 +46,11 @@ var token= Cookies.get("jwt_user")
 
   const replyMessage = async (message) => {
     setLoading(true);
+    setConversation(prevConversation => [
+      ...prevConversation, 
+      { role: "user", content: message }
+    ]);
+    // console.log(conversation)
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
@@ -57,7 +63,8 @@ var token= Cookies.get("jwt_user")
           fault_code,
           engine_type: type,
           requestCount,
-          aiType:"PAID"
+          aiType:"PAID",
+          conversation:conversation
         }),
       });
       const dataAi = await res.json();
@@ -82,14 +89,16 @@ var token= Cookies.get("jwt_user")
 
   const firstMessage = async () => {
     setLoading(true);
-    // displayOnScreen(val, 'others');
-    // if(val2){
-    //   displayOnScreen(val2, 'others');
-    // }else{
 
-    // }
-    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words `;
-   try {
+    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words.`;
+
+    // Add the message with proper structure to the conversation (role: "user" and content: message)
+    setConversation(prevConversation => [
+      ...prevConversation, 
+      { role: "user", content: message }
+    ]);
+
+    try {
       const res = await fetch(`${import.meta.env.VITE_API_URL_LL}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -101,31 +110,30 @@ var token= Cookies.get("jwt_user")
           fault_code,
           engine_type: type,
           requestCount,
-          aiType:"PAID"
+          aiType: "PAID",
+          conversation: [{role: "user", content: message}]
         }),
       });
+
       const dataAi = await res.json();
 
       if (dataAi.data) {
-        setRequestCount((count) => count + 1);
-          displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
-          setTimeout(()=>{
-            displayOnScreen(
-              `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
-              "others"
-            );
-          },3000)
+        setRequestCount(count => count + 1);
+        displayOnScreen(formatStringAndWrapDivs(dataAi.data), 'receiver');
+        
+        setTimeout(() => {
+          displayOnScreen(
+            `Click <a href="https://findmechanics.asoroautomotive.com/?_gl=1*z1hic2*_ga*MjA2MTUzMTU1My4xNzA3MjkxMDY1*_ga_NBETF1R9H5*MTcwNzI5MTA2NS4xLjEuMTcwNzI5MTA3MC4wLjAuMA.." class="paymentLink" target="_">Here</a> to find available mechanics`,
+            "others"
+          );
+        }, 3000);
       }
     } catch (error) {
-      // console.error('Error:', error);
-      displayOnScreen(
-        `Ensure internet connection is on and reload`,
-        "errorMessage"
-      );
+      displayOnScreen(`Ensure internet connection is on and reload`, "errorMessage");
     } finally {
       setLoading(false);
     }
-  };
+};
 
 
   const handleSendMessage = () => {
@@ -136,7 +144,7 @@ var token= Cookies.get("jwt_user")
     if (innerContRef.current) {
       innerContRef.current.scrollTop = innerContRef.current.scrollHeight;
     }
-    replyMessage(`${inputMessage}. Help me fix as a mechanic`);
+    replyMessage(`${inputMessage}`);
   };
 
   const handleKeyDown = (event) => {
