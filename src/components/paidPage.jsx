@@ -90,7 +90,7 @@ var token= Cookies.get("jwt_user")
   const firstMessage = async () => {
     setLoading(true);
 
-    const message = `As a mechanic, for the ${year} ${make} ${model} with fault code ${fault_code}, provide details on its meaning, symptoms, potential causes, and possible solutions. Use asterisks to separate the headings: **Meaning**, **Symptoms**, **Potential Causes**, and **Possible Solutions**. Keep it concise and informative, not more than 120 words.`;
+    const message = generateMechanicPrompt(fault_code, year, model, make);
 
     // Add the message with proper structure to the conversation (role: "user" and content: message)
     setConversation(prevConversation => [
@@ -237,12 +237,59 @@ useEffect(() => {
     </div>
   );
 }
+// function formatStringAndWrapDivs(inputString) {
+//   const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
+//   const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
+
+//   const urls = [];
+//   let urlMap = {};
+
+//   // Replace URLs with placeholders
+//   let placeholderText = inputString.replace(urlPattern, (url, offset) => {
+//       const beforeText = inputString.slice(0, offset);
+//       const afterText = inputString.slice(offset + url.length);
+//       const isEmail = emailPattern.test(beforeText) || emailPattern.test(afterText);
+
+//       if (!isEmail) {
+//           const placeholder = `__URL_PLACEHOLDER_${urls.length}__`;
+//           urls.push(url);
+//           urlMap[placeholder] = url;
+//           return placeholder;
+//       }
+//       return url;
+//   });
+
+//   // Split the text into sentences
+//   const sentences = placeholderText.split('.');
+
+//   let modifiedText = "";
+//   sentences.forEach((sentence) => {
+//       const trimmedSentence = sentence.trim();
+//       if (trimmedSentence) {
+//           // Make the bold formatting changes
+//           const formattedSentence = trimmedSentence.replace(/\*\*(.*?)\*\*/, '<div style="display: block; text-decoration: underline;"><b>$1</b></div>');
+//           modifiedText += `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`;
+//       }
+//   });
+
+//   // Replace URL placeholders with the original URLs
+//   modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
+//       return urlMap[placeholder] || placeholder;
+//   });
+
+//   return modifiedText;
+// }
+
+
+
 function formatStringAndWrapDivs(inputString) {
+  // Define patterns for URLs, emails, and fault codes
   const urlPattern = /(\bhttps?:\/\/[^\s]+\.[a-z]{2,6}\b)/gi;
   const emailPattern = /[\w._%+-]+@[\w.-]+\.[a-zA-Z]{2,6}/gi;
-
+  // const faultCodePattern = /\b[A-Za-z]\d{4}:\b/g; // Pattern to match strings like A1234: or b9876:
+  const faultCodePattern = /\b\w+:\b/g;
   const urls = [];
-  let urlMap = {};
+  const urlMap = {};
 
   // Replace URLs with placeholders
   let placeholderText = inputString.replace(urlPattern, (url, offset) => {
@@ -259,18 +306,29 @@ function formatStringAndWrapDivs(inputString) {
       return url;
   });
 
+  // Replace fault codes with styled and bold spans
+  placeholderText = placeholderText.replace(faultCodePattern, (match) => {
+      return `<div style="font-weight: bold; display: block; margin-top:10px; background-color: black; color: orange; padding: 5px; border-radius: 5px;"><b>${match}</b></div>`;
+  });
+
   // Split the text into sentences
   const sentences = placeholderText.split('.');
 
-  let modifiedText = "";
-  sentences.forEach((sentence) => {
-      const trimmedSentence = sentence.trim();
-      if (trimmedSentence) {
-          // Make the bold formatting changes
-          const formattedSentence = trimmedSentence.replace(/\*\*(.*?)\*\*/, '<div style="display: block; text-decoration: underline;"><b>$1</b></div>');
-          modifiedText += `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`;
-      }
-  });
+  let modifiedText = sentences
+      .map((sentence) => {
+          const trimmedSentence = sentence.trim();
+          if (trimmedSentence) {
+              // Apply bold formatting with div styling for **bold text**
+              return trimmedSentence.replace(
+                /\*\*(.*?)\*\*/,
+                  '<div style="font-weight: bold; margin-top:10px; margin-bottom: 5px; background-color: black; color: orange; padding: 5px; border-radius: 5px;"><b>$1</b></div>'
+              );
+          }
+          return '';
+      })
+      .filter((formattedSentence) => formattedSentence.length > 0)
+      .map((formattedSentence) => `<div style="margin-bottom: 10px;">${formattedSentence}.</div>`)
+      .join('');
 
   // Replace URL placeholders with the original URLs
   modifiedText = modifiedText.replace(/__URL_PLACEHOLDER_\d+__/g, (placeholder) => {
@@ -278,4 +336,33 @@ function formatStringAndWrapDivs(inputString) {
   });
 
   return modifiedText;
+}
+
+
+function cleanFaultCodes(input) {
+  // Regular expression to match the pattern: "P[0-9A-Z]{4}" or "U[0-9]{4}"
+  const regex = /P[0-9A-Z]{4}|U[0-9]{4}/g;
+
+  // Use the `match` method to extract all matching substrings
+  const matches = input.match(regex);
+
+  // Join the matches with commas and spaces
+  const result = matches.join(', ');
+
+  return result;
+}
+
+function generateMechanicPrompt(faultCodes, year, model, make) {
+    // Ensure fault codes are properly trimmed and formatted
+    const trimmedFaultCodes = cleanFaultCodes(faultCodes);
+    const faultCodeList = trimmedFaultCodes.split(", ");
+
+    // Generate a dynamic part of the message based on the number of codes
+    const faultCodeMessage = faultCodeList.length === 1
+        ? `fault code ${faultCodeList[0]}`
+        : `fault codes: ${faultCodeList.join(", ")}`;
+
+    // Craft the full message
+    // return `As a mechanic, for the ${carDetails.carYear}, ${carDetails.carMake}, ${carDetails.carBrand}, with ${faultCodeMessage}, provide details on each fault code, including its Meaning, Symptoms, Potential Causes, and Possible Solutions. Use asterisks to separate the headings. Keep your explanations concise and informative to a wide audience.`;
+    return `As a mechanic, for the ${year}, ${make}, ${model}, with ${faultCodeMessage}. Give a short, one liner explanation for each fault codes, including its Meaning, Symptoms, Potential Causes, and Possible Solutions, using this format (e.g Symptoms: Poor gas mileage and lack of power.). Use this format (**P0236**) to separate each faultcodes. Explain for all in one chat. Keep your explanations concise and informative to a wide audience. Don't start with an intro or outro. Just go straight to the point for the diagnosis.`;
 }
